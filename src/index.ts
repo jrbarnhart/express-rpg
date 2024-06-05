@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import usersRouter from "./routes/users";
 import petsRouter from "./routes/pets";
+import errorHandler from "./middleware/errorHandler";
 
 dotenv.config();
 const app = express();
@@ -12,6 +13,14 @@ app.get("/", (req, res) => {
 
 app.use("/users", usersRouter);
 app.use("/pets", petsRouter);
+
+// 404
+app.use((req, res) => {
+  res.json({ status: 404, message: "Resource not found." });
+});
+
+// Error Handler
+app.use(errorHandler);
 
 export default app;
 module.exports = app;
