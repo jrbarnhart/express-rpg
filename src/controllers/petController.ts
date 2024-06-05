@@ -40,6 +40,21 @@ const pet_update = asyncHandler(async (req, res) => {
   });
 });
 
-const petController = { pets_list, pet_get, pet_create, pet_update };
+const pet_feed = asyncHandler(async (req, res) => {
+  res.json({ success: true, petId: req.params.id, petHealth: 100 });
+});
+
+const pet_interact = asyncHandler(async (req, res) => {
+  res.json({ success: true, petId: req.params.id, petMood: 100 });
+});
+
+const petController = {
+  pets_list,
+  pet_get,
+  pet_create,
+  pet_update,
+  pet_feed,
+  pet_interact,
+};
 
 export default petController;
