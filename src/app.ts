@@ -3,14 +3,18 @@ import dotenv from "dotenv";
 import usersRouter from "./routes/users";
 import petsRouter from "./routes/pets";
 import errorHandler from "./middleware/errorHandler";
+import logger from "morgan";
 
 dotenv.config();
 const app = express();
 
+// Pre-Route Middleware
+app.use(logger("dev"));
+
+// Routes
 app.get("/", (req, res) => {
   res.status(200).send("Hello World!");
 });
-
 app.use("/users", usersRouter);
 app.use("/pets", petsRouter);
 
