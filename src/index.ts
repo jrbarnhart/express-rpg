@@ -11,4 +11,4 @@ app.get("/", (req, res) => {
 
 app.use("/users", usersRouter);
 
-export default app;
+module.exports = app;
