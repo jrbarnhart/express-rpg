@@ -4,6 +4,8 @@ import userController from "../controllers/userController";
 
 usersRouter.get("/", userController.users_get);
 
+usersRouter.get("/:id", userController.user_get);
+
 usersRouter.post("/", userController.user_create);
 
 usersRouter.put("/:id", userController.user_update);
