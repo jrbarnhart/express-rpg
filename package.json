@@ -6,7 +6,7 @@
     "build": "npx tsc",
     "start": "node ./bin/www",
     "debugstart": "DEBUG=express-rpg:* npm run start",
-    "dev": "nodemon src/devserver.ts",
+    "dev": "nodemon ./bin/devserver.ts",
     "lint": "eslint . --ext .ts"
   },
   "keywords": [],
