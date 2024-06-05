@@ -26,4 +26,6 @@ const user_update = asyncHandler(async (req, res) => {
   });
 });
 
-export default { users_get, user_create, user_update };
+const userController = { users_get, user_create, user_update };
+
+export default userController;

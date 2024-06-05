@@ -1,7 +1,7 @@
 import express from "express";
 import petController from "../controllers/petController";
-const router = express.Router();
+const petsRouter = express.Router();
 
-router.get("/", petController.pets_get);
+petsRouter.get("/", petController.pets_get);
 
-export default router;
+export default petsRouter;
