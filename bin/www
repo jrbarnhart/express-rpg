@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const app = require("../src/index");
+const app = require("../dist/index");
 const debug = require("debug")("express-rpg:server");
 const http = require("http");
 
