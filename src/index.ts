@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import playersRouter from "./routes/players";
+import usersRouter from "./routes/users";
 
 dotenv.config();
 const app = express();
@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
   res.status(200).send("Hello World!");
 });
 
-app.use("/players", playersRouter);
+app.use("/users", usersRouter);
 
 app
   .listen(PORT, () => {
