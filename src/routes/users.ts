@@ -2,7 +2,7 @@ import express from "express";
 const usersRouter = express.Router();
 import userController from "../controllers/userController";
 
-usersRouter.get("/", userController.users_get);
+usersRouter.get("/", userController.users_list);
 
 usersRouter.get("/:id", userController.user_get);
 

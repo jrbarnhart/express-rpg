@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 
-const users_get = asyncHandler(async (req, res) => {
+const users_list = asyncHandler(async (req, res) => {
   res.json({ userCount: 0, userPets: 0 });
 });
 
@@ -37,6 +37,11 @@ const user_update = asyncHandler(async (req, res) => {
   });
 });
 
-const userController = { users_get, user_get, user_create, user_update };
+const userController = {
+  users_list,
+  user_get,
+  user_create,
+  user_update,
+};
 
 export default userController;

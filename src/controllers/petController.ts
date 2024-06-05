@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 
-const pets_get = asyncHandler(async (req, res) => {
+const pets_list = asyncHandler(async (req, res) => {
   res.json({ petCount: 0, userPets: 0 });
 });
 
@@ -40,6 +40,6 @@ const pet_update = asyncHandler(async (req, res) => {
   });
 });
 
-const petController = { pets_get, pet_get, pet_create, pet_update };
+const petController = { pets_list, pet_get, pet_create, pet_update };
 
 export default petController;

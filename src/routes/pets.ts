@@ -2,7 +2,7 @@ import express from "express";
 import petController from "../controllers/petController";
 const petsRouter = express.Router();
 
-petsRouter.get("/", petController.pets_get);
+petsRouter.get("/", petController.pets_list);
 
 petsRouter.get("/:id", petController.pet_get);
 
