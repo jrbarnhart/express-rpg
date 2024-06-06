@@ -6,6 +6,7 @@ import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
 
 dotenv.config();
+
 const app = express();
 
 // Pre-Route Middleware
