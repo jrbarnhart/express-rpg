@@ -1,7 +1,9 @@
 import asyncHandler from "express-async-handler";
+import prisma from "../lib/prisma";
 
 const pets_list = asyncHandler(async (req, res) => {
-  res.json({ petCount: 0, userPets: 0 });
+  const petCount = await prisma.pet.count();
+  res.json({ petCount, userPets: 0 });
 });
 
 const pet_get = asyncHandler(async (req, res) => {
