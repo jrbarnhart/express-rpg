@@ -14,32 +14,85 @@ datasource db {
 }
 
 model User {
-  id           Int    @id @default(autoincrement())
-  email        String @unique
-  username     String @unique
+  id           Int         @id @default(autoincrement())
+  email        String      @unique
+  username     String      @unique
   passwordHash String
   pets         Pet[]
+  pveBattles   PVEBattle[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Pet {
-  id      Int      @id @default(autoincrement())
-  owner   User     @relation(fields: [ownerId], references: [id])
-  ownerId Int
-  name    String
-  type    PetType
-  color   PetColor
-  health  Int
-  mood    Int
+  id        Int      @id @default(autoincrement())
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  ownerId   Int
+  isActive  Boolean  @default(false)
+  species   Species  @relation(fields: [speciesId], references: [id], onDelete: Restrict)
+  speciesId Int
+  color     Color    @relation(fields: [colorId], references: [id], onDelete: Restrict)
+  colorId   Int
+  name      String
+  health    Int
+  mood      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-enum PetType {
-  CIRCLE
-  TRIANGLE
-  SQUARE
+model Species {
+  id        Int           @id @default(autoincrement())
+  name      String        @unique
+  colors    Color[]
+  pets      Pet[]
+  templates NPCTemplate[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
-enum PetColor {
-  RED
-  GREEN
-  BLUE
+model Color {
+  id        Int           @id @default(autoincrement())
+  name      String        @unique
+  pets      Pet[]
+  species   Species[]
+  templates NPCTemplate[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model NPCTemplate {
+  id        Int           @id @default(autoincrement())
+  name      String        @unique
+  instances NPCInstance[]
+  species   Species       @relation(fields: [speciesId], references: [id], onDelete: Restrict)
+  speciesId Int
+  color     Color         @relation(fields: [colorId], references: [id], onDelete: Restrict)
+  colorId   Int
+  health    Int
+  mood      Int
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model NPCInstance {
+  id         Int         @id @default(autoincrement())
+  name       String
+  template   NPCTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  templateId Int
+  health     Int
+  mood       Int
+  battle     PVEBattle?  @relation(fields: [battleId], references: [id], onDelete: SetNull)
+  battleId   Int?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model PVEBattle {
+  id        Int           @id @default(autoincrement())
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  isActive  Boolean       @default(false)
+  opponents NPCInstance[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
