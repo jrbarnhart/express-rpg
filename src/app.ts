@@ -4,6 +4,12 @@ import usersRouter from "./routes/users";
 import petsRouter from "./routes/pets";
 import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
+import session from "express-session";
+import passport from "passport";
+import PassportLocalStrategy from "passport-local";
+import verifySessionSecret from "./middleware/verifySessionSecret";
+
+const LocalStrategy = PassportLocalStrategy.Strategy;
 
 dotenv.config();
 
@@ -11,6 +17,18 @@ const app = express();
 
 // Pre-Route Middleware
 app.use(logger("dev"));
+
+// Authentication
+app.use(verifySessionSecret);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.session());
 
 // Routes
 app.get("/", (req, res) => {
