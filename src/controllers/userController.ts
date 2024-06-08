@@ -111,7 +111,7 @@ const user_create = asyncHandler(async (req, res, next) => {
       // Handle Prisma errors
       const responseJSON: iResponseJSON = {
         success: false,
-        message: "User creation failed",
+        message: "User creation failed.",
       };
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         // Unique constraint error
