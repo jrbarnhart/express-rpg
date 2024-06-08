@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { z } from "zod";
-import { iResponseJSON } from "../lib/types";
+import { iErrorData, iResponseJSON } from "../lib/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
@@ -109,15 +109,28 @@ const user_create = asyncHandler(async (req, res, next) => {
       res.json(responseJSON);
     } catch (error) {
       // Handle Prisma errors
+      const responseJSON: iResponseJSON = {
+        success: false,
+        message: "User creation failed",
+      };
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // Unique constraint error
         if (error.code === "P2002") {
-          console.log(
-            "Unique constraint violation. Username or email already in use."
-          );
+          const meta = error.meta;
+          const targetArray = meta?.target;
+          if (Array.isArray(targetArray)) {
+            const target: string = targetArray[0];
+            const errorData: iErrorData = {
+              errors: {},
+            };
+            errorData.errors[target] = [
+              `That ${target} is already in use. Please log in or choose another ${target}.`,
+            ];
+            responseJSON.data = errorData;
+          }
         }
       }
-
-      next(error);
+      res.json(responseJSON);
     }
   });
 });
