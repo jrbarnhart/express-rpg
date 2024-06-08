@@ -45,11 +45,11 @@ const user_get = asyncHandler(async (req, res) => {
     select: { id: true, username: true, email: true, passwordHash: false },
   });
   if (!user) {
-    const errorResponse: iResponseJSON = {
+    const responseJSON: iResponseJSON = {
       success: false,
       message: "Cannot get user. User may not exist.",
     };
-    res.json(errorResponse);
+    res.json(responseJSON);
   } else {
     const responseJSON: iResponseJSON = {
       success: true,
@@ -62,23 +62,23 @@ const user_get = asyncHandler(async (req, res) => {
 const user_create = asyncHandler(async (req, res, next) => {
   const newUserData = req.body.data;
   if (!newUserData) {
-    const errorResponse: iResponseJSON = {
+    const responseJSON: iResponseJSON = {
       success: false,
       message: "No new user data was found. Check request body format.",
     };
-    res.json(errorResponse);
+    res.json(responseJSON);
     return;
   }
   const validatedData = NewUser.safeParse(newUserData);
 
   if (!validatedData.success) {
-    const errorResponse: iResponseJSON = {
+    const responseJSON: iResponseJSON = {
       success: false,
       message: "New user data invalid. Failed to create user.",
       data: { errors: validatedData.error.flatten().fieldErrors },
     };
 
-    res.json(errorResponse);
+    res.json(responseJSON);
     return;
   }
 
@@ -96,7 +96,7 @@ const user_create = asyncHandler(async (req, res, next) => {
         },
       });
 
-      const jsonResponse: iResponseJSON = {
+      const responseJSON: iResponseJSON = {
         success: true,
         message: "User created.",
         data: {
@@ -106,7 +106,7 @@ const user_create = asyncHandler(async (req, res, next) => {
         },
       };
 
-      res.json(jsonResponse);
+      res.json(responseJSON);
     } catch (error) {
       // Handle Prisma errors
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
