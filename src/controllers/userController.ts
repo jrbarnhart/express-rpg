@@ -34,7 +34,8 @@ const NewUser = z.object({
 });
 
 const users_list = asyncHandler(async (req, res) => {
-  res.json({ userCount: 0, userPets: 0 });
+  const userCount = await prisma.user.count();
+  res.json({ userCount });
 });
 
 const user_get = asyncHandler(async (req, res) => {
