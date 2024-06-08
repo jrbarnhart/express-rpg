@@ -3,6 +3,7 @@ import { z } from "zod";
 import { iResponseJSON } from "../lib/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma";
+import { Prisma } from "@prisma/client";
 
 const NewUser = z.object({
   email: z
@@ -47,7 +48,7 @@ const user_get = asyncHandler(async (req, res) => {
   });
 });
 
-const user_create = asyncHandler(async (req, res) => {
+const user_create = asyncHandler(async (req, res, next) => {
   const newUserData = req.body.data;
   if (!newUserData) {
     const errorResponse: iResponseJSON = {
@@ -71,25 +72,42 @@ const user_create = asyncHandler(async (req, res) => {
   }
 
   bcrypt.hash(validatedData.data.password, 10, async (err, hashedPassword) => {
-    const newUser = await prisma.user.create({
-      data: {
-        username: validatedData.data.username,
-        email: validatedData.data.email,
-        passwordHash: hashedPassword,
-      },
-    });
+    if (err) {
+      next(err);
+    }
 
-    const jsonResponse: iResponseJSON = {
-      success: true,
-      message: "User created.",
-      data: {
-        id: newUser.id,
-        email: newUser.email,
-        username: newUser.username,
-      },
-    };
+    try {
+      const newUser = await prisma.user.create({
+        data: {
+          username: validatedData.data.username,
+          email: validatedData.data.email,
+          passwordHash: hashedPassword,
+        },
+      });
 
-    res.json(jsonResponse);
+      const jsonResponse: iResponseJSON = {
+        success: true,
+        message: "User created.",
+        data: {
+          id: newUser.id,
+          email: newUser.email,
+          username: newUser.username,
+        },
+      };
+
+      res.json(jsonResponse);
+    } catch (error) {
+      // Handle Prisma errors
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          console.log(
+            "Unique constraint violation. Username or email already in use."
+          );
+        }
+      }
+
+      next(error);
+    }
   });
 });
 
