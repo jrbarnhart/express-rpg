@@ -1,16 +1,14 @@
-import { ZodError } from "zod";
-
 export interface iResponseJSON {
   success: true | false;
-  data?: iUserJSON | iResponseError;
   message?: string;
+  data?: iUserData | iErrorData;
 }
 
-export interface iResponseError {
-  errors: ZodError;
+export interface iErrorData {
+  errors: Record<string, string[]>;
 }
 
-export interface iUserJSON {
+export interface iUserData {
   id: number;
   username: string;
   email: string;
