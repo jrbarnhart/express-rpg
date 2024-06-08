@@ -137,12 +137,8 @@ const user_create = asyncHandler(async (req, res, next) => {
 
 const user_update = asyncHandler(async (req, res) => {
   res.json({
-    user: {
-      id: req.params.id,
-      username: "coolnewname",
-      email: "coolnewname@mail.com",
-      pass_hash: "aJ2(n!LKn2#b*",
-    },
+    success: false,
+    message: "NYI",
   });
 });
 
