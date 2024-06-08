@@ -39,7 +39,7 @@ const users_list = asyncHandler(async (req, res) => {
 });
 
 const user_get = asyncHandler(async (req, res) => {
-  const userId = req.body.params.id;
+  const userId = parseInt(req.params.id);
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true, username: true, email: true, passwordHash: false },
@@ -47,7 +47,7 @@ const user_get = asyncHandler(async (req, res) => {
   if (!user) {
     const errorResponse: iResponseJSON = {
       success: false,
-      message: "Cannot get user. Check request format.",
+      message: "Cannot get user. User may not exist.",
     };
     res.json(errorResponse);
   } else {
