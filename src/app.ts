@@ -17,6 +17,7 @@ const app = express();
 
 // Pre-Route Middleware
 app.use(logger("dev"));
+app.use(express.json());
 
 // Authentication
 app.use(verifySessionSecret);
