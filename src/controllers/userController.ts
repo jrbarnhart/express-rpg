@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { z } from "zod";
+import { iResponseJSON } from "../lib/types";
 
 const NewUser = z.object({
   email: z
@@ -45,14 +46,29 @@ const user_get = asyncHandler(async (req, res) => {
 });
 
 const user_create = asyncHandler(async (req, res) => {
-  res.json({
-    user: {
-      id: 1,
-      username: "coolname",
-      email: "coolname@mail.com",
-      pass_hash: "J3K!~@K!#@jk@PWQ",
-    },
-  });
+  const newUserData = req.body.data;
+  if (!newUserData) {
+    const errorResponse: iResponseJSON = {
+      success: false,
+      message: "No new user data was found. Check request body format.",
+    };
+    res.json(errorResponse);
+    return;
+  }
+  const validatedData = NewUser.safeParse(newUserData);
+
+  if (!validatedData.success) {
+    const errorResponse: iResponseJSON = {
+      success: false,
+      message: "New user data invalid. Failed to create user.",
+      data: { errors: validatedData.error.flatten().fieldErrors },
+    };
+
+    res.json(errorResponse);
+    return;
+  }
+
+  res.json({ success: true });
 });
 
 const user_update = asyncHandler(async (req, res) => {
