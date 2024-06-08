@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
 import { z } from "zod";
 import { iResponseJSON } from "../lib/types";
+import bcrypt from "bcryptjs";
+import prisma from "../lib/prisma";
 
 const NewUser = z.object({
   email: z
@@ -68,7 +70,27 @@ const user_create = asyncHandler(async (req, res) => {
     return;
   }
 
-  res.json({ success: true });
+  bcrypt.hash(validatedData.data.password, 10, async (err, hashedPassword) => {
+    const newUser = await prisma.user.create({
+      data: {
+        username: validatedData.data.username,
+        email: validatedData.data.email,
+        passwordHash: hashedPassword,
+      },
+    });
+
+    const jsonResponse: iResponseJSON = {
+      success: true,
+      message: "User created.",
+      data: {
+        id: newUser.id,
+        email: newUser.email,
+        username: newUser.username,
+      },
+    };
+
+    res.json(jsonResponse);
+  });
 });
 
 const user_update = asyncHandler(async (req, res) => {
