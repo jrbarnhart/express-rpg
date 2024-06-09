@@ -177,7 +177,7 @@ const user_login = asyncHandler(async (req, res) => {
       username: user.username,
     },
     process.env.TOKEN_SECRET || "",
-    { expiresIn: "1d" }
+    { expiresIn: "7d" }
   );
 
   responseJSON.success = true;
