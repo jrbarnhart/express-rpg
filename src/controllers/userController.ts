@@ -4,6 +4,7 @@ import { iErrorData, iResponseJSON } from "../lib/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
+import passport from "passport";
 
 const NewUser = z.object({
   email: z
@@ -142,11 +143,17 @@ const user_update = asyncHandler(async (req, res) => {
   });
 });
 
+const user_login = asyncHandler(async (req, res, next) => {
+  passport.authenticate("local");
+  next();
+});
+
 const userController = {
   users_list,
   user_get,
   user_create,
   user_update,
+  user_login,
 };
 
 export default userController;
