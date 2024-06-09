@@ -4,7 +4,6 @@ import usersRouter from "./routes/users";
 import petsRouter from "./routes/pets";
 import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
-import passport from "passport";
 import verifyTokenSecret from "./middleware/verifyTokenSecret";
 
 import "./config/passport";
