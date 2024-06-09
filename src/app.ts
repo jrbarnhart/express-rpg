@@ -4,7 +4,6 @@ import usersRouter from "./routes/users";
 import petsRouter from "./routes/pets";
 import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
-import session from "express-session";
 import passport from "passport";
 import verifyTokenSecret from "./middleware/verifyTokenSecret";
 
@@ -19,20 +18,6 @@ app.use(express.json());
 
 // Authentication
 app.use(verifyTokenSecret);
-
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-app.use(passport.session());
-
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
-  next();
-});
 
 // Routes
 app.get("/", (req, res) => {
