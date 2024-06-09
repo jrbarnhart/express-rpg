@@ -15,6 +15,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
       res.json(responseJSON);
       return;
     }
+    req.user = user;
     next();
   };
   passport.authenticate("jwt", { session: false }, callback)(req, res, next);
