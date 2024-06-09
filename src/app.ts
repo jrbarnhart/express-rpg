@@ -6,32 +6,9 @@ import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
 import session from "express-session";
 import passport from "passport";
-import PassportLocalStrategy from "passport-local";
-import bcrypt from "bcryptjs";
 import verifySessionSecret from "./middleware/verifySessionSecret";
-import prisma from "./lib/prisma";
 
 dotenv.config();
-const LocalStrategy = PassportLocalStrategy.Strategy;
-
-// Local Strategy Config
-passport.use(
-  new LocalStrategy(async (username, password, done) => {
-    try {
-      const user = await prisma.user.findUnique({ where: { username } });
-      if (!user) {
-        return done(null, false, { message: "Incorrect username" });
-      }
-      const match = await bcrypt.compare(password, user.passwordHash);
-      if (!match) {
-        return done(null, false, { message: "Incorrect password" });
-      }
-      return done(null, user);
-    } catch (err) {
-      return done(err);
-    }
-  })
-);
 
 const app = express();
 
