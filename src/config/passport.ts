@@ -1,4 +1,29 @@
 import passport from "passport";
+import passportJWT, { StrategyOptions } from "passport-jwt";
+import prisma from "../lib/prisma";
+
+const JwtStrategy = passportJWT.Strategy;
+const ExtractJwt = passportJWT.ExtractJwt;
+
+const opts: StrategyOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: "secretPlaceholder",
+};
+
+passport.use(
+  new JwtStrategy(opts, async (payload, done) => {
+    try {
+      const user = await prisma.user.findUnique({ where: { id: payload.id } });
+      if (user) {
+        return done(null, user);
+      }
+    } catch (err) {
+      return done(err);
+    }
+  })
+);
+
+/* import passport from "passport";
 import passportLocal from "passport-local";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma";
@@ -35,3 +60,4 @@ passport.deserializeUser(async (id: number, done) => {
     done(err);
   }
 });
+ */
