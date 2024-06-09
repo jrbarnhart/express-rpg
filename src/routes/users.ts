@@ -12,4 +12,6 @@ usersRouter.put("/:id", userController.user_update);
 
 usersRouter.post("/login", userController.user_login);
 
+usersRouter.get("/login-fail", userController.user_login_fail);
+
 export default usersRouter;
