@@ -6,7 +6,7 @@ import prisma from "../lib/prisma";
 import jwt from "jsonwebtoken";
 import formatPrismaError from "../lib/formatPrismaError";
 
-const UserSchema = z.object({
+const NewUserSchema = z.object({
   email: z
     .string()
     .trim()
@@ -32,6 +32,37 @@ const UserSchema = z.object({
     })
     .regex(/[0-9]/, { message: "Password must contain at least one number" })
     .regex(/^\S*$/, { message: "Password must not contain spaces" }),
+});
+
+const UpdateUserSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email({
+      message: "Must be a valid email format. Example: user@service.com",
+    })
+    .min(5, { message: "Email must be at least 5 characters long" })
+    .max(320, { message: "Email must be at most 320 characters long" })
+    .optional(),
+  username: z
+    .string()
+    .trim()
+    .min(5, { message: "Username must be at least 5 characters long" })
+    .max(64, { message: "Username must be at most 64 characters long" })
+    .optional(),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .max(100, { message: "Password must be at most 100 characters long" })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .regex(/[0-9]/, { message: "Password must contain at least one number" })
+    .regex(/^\S*$/, { message: "Password must not contain spaces" })
+    .optional(),
 });
 
 const users_list = asyncHandler(async (req, res) => {
@@ -70,7 +101,7 @@ const user_create = asyncHandler(async (req, res, next) => {
     res.json(responseJSON);
     return;
   }
-  const validatedData = UserSchema.safeParse(newUserData);
+  const validatedData = NewUserSchema.safeParse(newUserData);
 
   if (!validatedData.success) {
     const responseJSON: iResponseJSON = {
@@ -127,14 +158,81 @@ const user_create = asyncHandler(async (req, res, next) => {
   });
 });
 
-const user_update = asyncHandler(async (req, res) => {
+const user_update = asyncHandler(async (req, res, next) => {
   const responseJSON: iResponseJSON = {
     success: false,
   };
+
   if (req.user?.id.toString() !== req.params.id) {
     responseJSON.message = "Access denied. You cannot update this user.";
     res.json(responseJSON);
     return;
+  }
+
+  const updatedUserData = req.body.data;
+  if (!updatedUserData) {
+    responseJSON.success = false;
+    responseJSON.message =
+      "No user data changes were found. Check request body format.";
+    res.json(responseJSON);
+    return;
+  }
+
+  const validatedData = UpdateUserSchema.safeParse(updatedUserData);
+  if (!validatedData.success) {
+    responseJSON.success = false;
+    responseJSON.message = "User data changes invalid. Failed to update user.";
+    responseJSON.data = { errors: validatedData.error.flatten().fieldErrors };
+    res.json(responseJSON);
+    return;
+  }
+
+  if (validatedData.data.password) {
+    bcrypt.hash(
+      validatedData.data.password,
+      10,
+      async (err, hashedPassword) => {
+        if (err) {
+          next(err);
+        }
+
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { password, ...dataWithoutPassword } = validatedData.data;
+          const dataWithHash = {
+            ...dataWithoutPassword,
+            passwordHash: hashedPassword,
+          };
+
+          const updatedUser = await prisma.user.update({
+            where: { username: req.user?.username },
+            data: { ...dataWithHash },
+          });
+          if (updatedUser) {
+            responseJSON.success = true;
+            responseJSON.message = "User updated successfully.";
+            responseJSON.data = {
+              id: updatedUser.id,
+              email: updatedUser.email,
+              username: updatedUser.username,
+            };
+            res.json(responseJSON);
+          }
+        } catch (error) {
+          responseJSON.success = false;
+          responseJSON.message = "User update failed.";
+
+          const errorData = formatPrismaError(error);
+
+          if (errorData) {
+            responseJSON.data = errorData;
+          }
+
+          console.log(error);
+          res.json(responseJSON);
+        }
+      }
+    );
   }
 
   /*   const user = await prisma.user.update({
