@@ -6,7 +6,7 @@ import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
 import jwt from "jsonwebtoken";
 
-const NewUser = z.object({
+const UserSchema = z.object({
   email: z
     .string()
     .trim()
@@ -70,7 +70,7 @@ const user_create = asyncHandler(async (req, res, next) => {
     res.json(responseJSON);
     return;
   }
-  const validatedData = NewUser.safeParse(newUserData);
+  const validatedData = UserSchema.safeParse(newUserData);
 
   if (!validatedData.success) {
     const responseJSON: iResponseJSON = {
