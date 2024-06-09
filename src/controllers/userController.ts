@@ -208,16 +208,15 @@ const user_update = asyncHandler(async (req, res, next) => {
             where: { username: req.user?.username },
             data: { ...dataWithHash },
           });
-          if (updatedUser) {
-            responseJSON.success = true;
-            responseJSON.message = "User updated successfully.";
-            responseJSON.data = {
-              id: updatedUser.id,
-              email: updatedUser.email,
-              username: updatedUser.username,
-            };
-            res.json(responseJSON);
-          }
+
+          responseJSON.success = true;
+          responseJSON.message = "User updated successfully.";
+          responseJSON.data = {
+            id: updatedUser.id,
+            email: updatedUser.email,
+            username: updatedUser.username,
+          };
+          res.json(responseJSON);
         } catch (error) {
           responseJSON.success = false;
           responseJSON.message = "User update failed.";
@@ -233,6 +232,34 @@ const user_update = asyncHandler(async (req, res, next) => {
         }
       }
     );
+  } else if (!validatedData.data.password) {
+    try {
+      const updatedUser = await prisma.user.update({
+        where: { username: req.user?.username },
+        data: { ...validatedData.data },
+      });
+
+      responseJSON.success = true;
+      responseJSON.message = "User updated successfully.";
+      responseJSON.data = {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        username: updatedUser.username,
+      };
+      res.json(responseJSON);
+    } catch (error) {
+      responseJSON.success = false;
+      responseJSON.message = "User update failed.";
+
+      const errorData = formatPrismaError(error);
+
+      if (errorData) {
+        responseJSON.data = errorData;
+      }
+
+      console.log(error);
+      res.json(responseJSON);
+    }
   }
 
   /*   const user = await prisma.user.update({
