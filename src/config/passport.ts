@@ -1,7 +1,6 @@
 import passport from "passport";
 import passportJWT, { StrategyOptions } from "passport-jwt";
 import prisma from "../lib/prisma";
-import bcrypt from "bcryptjs";
 
 const JwtStrategy = passportJWT.Strategy;
 const ExtractJwt = passportJWT.ExtractJwt;
@@ -19,10 +18,6 @@ passport.use(
       });
       if (!user) {
         return done(null, false, { message: "Incorrect username" });
-      }
-      const match = await bcrypt.compare(payload.password, user.passwordHash);
-      if (!match) {
-        return done(null, false, { message: "Incorrect password" });
       }
       return done(null, user);
     } catch (err) {
