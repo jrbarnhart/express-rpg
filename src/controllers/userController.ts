@@ -144,8 +144,27 @@ const user_update = asyncHandler(async (req, res) => {
 });
 
 const user_login = asyncHandler(async (req, res, next) => {
-  passport.authenticate("local");
-  next();
+  const responseJSON: iResponseJSON = {
+    success: false,
+  };
+  if (!req.body.data) {
+    responseJSON.message = "Login data required";
+    res.json(responseJSON);
+    return;
+  }
+  req.body.username = req.body.data.username;
+  req.body.password = req.body.data.password;
+  passport.authenticate("local", {
+    failureMessage: true,
+  })(req, res, next);
+});
+
+const user_login_fail = asyncHandler(async (req, res) => {
+  const responseJSON: iResponseJSON = {
+    success: false,
+    message: "User login failed",
+  };
+  res.json(responseJSON);
 });
 
 const userController = {
@@ -154,6 +173,7 @@ const userController = {
   user_create,
   user_update,
   user_login,
+  user_login_fail,
 };
 
 export default userController;
