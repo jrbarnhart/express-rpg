@@ -7,6 +7,8 @@ usersRouter.get("/login-success", userController.user_login_success);
 
 usersRouter.post("/login", userController.user_login);
 
+usersRouter.post("/logout", userController.user_logout);
+
 usersRouter.get("/:id", userController.user_get);
 usersRouter.put("/:id", userController.user_update);
 

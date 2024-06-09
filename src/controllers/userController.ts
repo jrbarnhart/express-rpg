@@ -178,6 +178,22 @@ const user_login_success = asyncHandler(async (req, res) => {
   res.json(responseJSON);
 });
 
+const user_logout = asyncHandler(async (req, res, next) => {
+  const responseJSON: iResponseJSON = {
+    success: true,
+    message: "User logged out successfully",
+  };
+  req.logout((err) => {
+    if (err) {
+      responseJSON.success = false;
+      responseJSON.message = "There was an error while logging out.";
+      res.json(responseJSON);
+      return next(err);
+    }
+    res.json(responseJSON);
+  });
+});
+
 const userController = {
   users_list,
   user_get,
@@ -186,6 +202,7 @@ const userController = {
   user_login,
   user_login_fail,
   user_login_success,
+  user_logout,
 };
 
 export default userController;
