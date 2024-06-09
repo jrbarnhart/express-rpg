@@ -10,4 +10,6 @@ usersRouter.post("/", userController.user_create);
 
 usersRouter.put("/:id", userController.user_update);
 
+usersRouter.post("/login", userController.user_login);
+
 export default usersRouter;
