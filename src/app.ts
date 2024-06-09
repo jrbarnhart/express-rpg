@@ -8,6 +8,7 @@ import session from "express-session";
 import passport from "passport";
 import verifySessionSecret from "./middleware/verifySessionSecret";
 
+import "./config/passport";
 dotenv.config();
 
 const app = express();
