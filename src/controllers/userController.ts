@@ -1,10 +1,10 @@
 import asyncHandler from "express-async-handler";
 import { z } from "zod";
-import { iErrorData, iResponseJSON } from "../lib/types";
+import { iResponseJSON } from "../lib/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma";
-import { Prisma } from "@prisma/client";
 import jwt from "jsonwebtoken";
+import formatPrismaError from "../lib/formatPrismaError";
 
 const UserSchema = z.object({
   email: z
@@ -114,33 +114,42 @@ const user_create = asyncHandler(async (req, res, next) => {
         success: false,
         message: "User creation failed.",
       };
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Unique constraint error
-        if (error.code === "P2002") {
-          const meta = error.meta;
-          const targetArray = meta?.target;
-          if (Array.isArray(targetArray)) {
-            const target: string = targetArray[0];
-            const errorData: iErrorData = {
-              errors: {},
-            };
-            errorData.errors[target] = [
-              `That ${target} is already in use. Please log in or choose another ${target}.`,
-            ];
-            responseJSON.data = errorData;
-          }
-        }
+
+      const errorData = formatPrismaError(error);
+
+      if (errorData) {
+        responseJSON.data = errorData;
       }
+
+      console.log(error);
       res.json(responseJSON);
     }
   });
 });
 
 const user_update = asyncHandler(async (req, res) => {
-  res.json({
+  const responseJSON: iResponseJSON = {
     success: false,
-    message: "NYI",
+  };
+  if (req.user?.id.toString() !== req.params.id) {
+    responseJSON.message = "Access denied. You cannot update this user.";
+    res.json(responseJSON);
+    return;
+  }
+
+  /*   const user = await prisma.user.update({
+    where: { username: req.user.username },
+    data: {}
   });
+
+  if (!user) {
+    responseJSON.message = "Update failed. Please try again."
+    res.json(responseJSON);
+    return;
+  } */
+
+  responseJSON.success = true;
+  res.json(responseJSON);
 });
 
 const user_login = asyncHandler(async (req, res) => {
