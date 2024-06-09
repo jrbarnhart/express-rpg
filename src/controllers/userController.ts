@@ -156,6 +156,7 @@ const user_login = asyncHandler(async (req, res, next) => {
   req.body.password = req.body.data.password;
   passport.authenticate("local", {
     failureMessage: true,
+    failureRedirect: "/users/login-fail",
   })(req, res, next);
 });
 
