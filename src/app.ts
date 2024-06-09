@@ -6,7 +6,7 @@ import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
 import session from "express-session";
 import passport from "passport";
-import verifySessionSecret from "./middleware/verifySessionSecret";
+import verifyTokenSecret from "./middleware/verifyTokenSecret";
 
 import "./config/passport";
 dotenv.config();
@@ -18,7 +18,7 @@ app.use(logger("dev"));
 app.use(express.json());
 
 // Authentication
-app.use(verifySessionSecret);
+app.use(verifyTokenSecret);
 
 app.use(
   session({
