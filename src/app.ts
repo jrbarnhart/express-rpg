@@ -29,6 +29,11 @@ app.use(
 );
 app.use(passport.session());
 
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
+
 // Routes
 app.get("/", (req, res) => {
   res.status(200).send("Hello World!");
