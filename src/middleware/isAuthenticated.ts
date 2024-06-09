@@ -10,7 +10,7 @@ const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     if (!user) {
       const responseJSON: iResponseJSON = {
         success: false,
-        message: "Authorization required. Please log in and try again.",
+        message: "Authorization required. Check credentials and try again.",
       };
       res.json(responseJSON);
       return;
