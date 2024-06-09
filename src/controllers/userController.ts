@@ -4,7 +4,7 @@ import { iErrorData, iResponseJSON } from "../lib/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma";
 import { Prisma } from "@prisma/client";
-import passport from "passport";
+import jwt from "jsonwebtoken";
 
 const NewUser = z.object({
   email: z
@@ -143,29 +143,53 @@ const user_update = asyncHandler(async (req, res) => {
   });
 });
 
-const user_login = asyncHandler(async (req, res, next) => {
+const user_login = asyncHandler(async (req, res) => {
   const responseJSON: iResponseJSON = {
     success: false,
   };
+
   if (!req.body.data) {
-    responseJSON.message = "Login data required";
+    responseJSON.message = "Login data required.";
     res.json(responseJSON);
     return;
   }
-  req.body.username = req.body.data.username;
-  req.body.password = req.body.data.password;
-  passport.authenticate("local", {
-    failureMessage: true,
-    failureRedirect: "/users/login-fail",
-    successMessage: true,
-    successRedirect: "/users/login-success",
-  })(req, res, next);
+
+  const data = req.body.data;
+  const user = await prisma.user.findUnique({
+    where: { username: data.username },
+  });
+  if (!user) {
+    responseJSON.message = "Login failed. User not found.";
+    res.json(responseJSON);
+    return;
+  }
+
+  const match = await bcrypt.compare(data.password, user.passwordHash);
+  if (!match) {
+    responseJSON.message = "Login failed. Incorrect password.";
+    res.json(responseJSON);
+    return;
+  }
+
+  const accessToken = jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+    },
+    process.env.TOKEN_SECRET || "",
+    { expiresIn: "1d" }
+  );
+
+  responseJSON.success = true;
+  responseJSON.message = "User logged in with returned token.";
+  responseJSON.data = { accessToken };
+  res.json(responseJSON);
 });
 
 const user_login_fail = asyncHandler(async (req, res) => {
   const responseJSON: iResponseJSON = {
     success: false,
-    message: "User login failed",
+    message: "User login failed.",
   };
   res.json(responseJSON);
 });
@@ -173,7 +197,7 @@ const user_login_fail = asyncHandler(async (req, res) => {
 const user_login_success = asyncHandler(async (req, res) => {
   const responseJSON: iResponseJSON = {
     success: true,
-    message: "User logged in successfully",
+    message: "User logged in successfully.",
   };
   res.json(responseJSON);
 });
