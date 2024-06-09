@@ -157,6 +157,8 @@ const user_login = asyncHandler(async (req, res, next) => {
   passport.authenticate("local", {
     failureMessage: true,
     failureRedirect: "/users/login-fail",
+    successMessage: true,
+    successRedirect: "/users/login-success",
   })(req, res, next);
 });
 
@@ -168,6 +170,14 @@ const user_login_fail = asyncHandler(async (req, res) => {
   res.json(responseJSON);
 });
 
+const user_login_success = asyncHandler(async (req, res) => {
+  const responseJSON: iResponseJSON = {
+    success: true,
+    message: "User logged in successfully",
+  };
+  res.json(responseJSON);
+});
+
 const userController = {
   users_list,
   user_get,
@@ -175,6 +185,7 @@ const userController = {
   user_update,
   user_login,
   user_login_fail,
+  user_login_success,
 };
 
 export default userController;

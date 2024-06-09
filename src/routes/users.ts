@@ -3,6 +3,7 @@ const usersRouter = express.Router();
 import userController from "../controllers/userController";
 
 usersRouter.get("/login-fail", userController.user_login_fail);
+usersRouter.get("/login-success", userController.user_login_success);
 
 usersRouter.post("/login", userController.user_login);
 
