@@ -1,10 +1,11 @@
 import asyncHandler from "express-async-handler";
 import { z } from "zod";
-import { iResponseJSON } from "../lib/types";
+import { iResponseJSON, iValidatedUserData } from "../lib/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma";
 import jwt from "jsonwebtoken";
 import formatPrismaError from "../lib/formatPrismaError";
+import { Request } from "express";
 
 const NewUserSchema = z.object({
   email: z
@@ -159,6 +160,40 @@ const user_create = asyncHandler(async (req, res, next) => {
 });
 
 const user_update = asyncHandler(async (req, res, next) => {
+  const updateUser = async (
+    req: Request,
+    responseJSON: iResponseJSON,
+    validatedUserData: iValidatedUserData
+  ) => {
+    try {
+      const updatedUser = await prisma.user.update({
+        where: { username: req.user?.username },
+        data: { ...validatedUserData },
+      });
+
+      responseJSON.success = true;
+      responseJSON.message = "User updated successfully.";
+      responseJSON.data = {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        username: updatedUser.username,
+      };
+      res.json(responseJSON);
+    } catch (error) {
+      responseJSON.success = false;
+      responseJSON.message = "User update failed.";
+
+      const errorData = formatPrismaError(error);
+
+      if (errorData) {
+        responseJSON.data = errorData;
+      }
+
+      console.log(error);
+      res.json(responseJSON);
+    }
+  };
+
   const responseJSON: iResponseJSON = {
     success: false,
   };
@@ -196,70 +231,18 @@ const user_update = asyncHandler(async (req, res, next) => {
           next(err);
         }
 
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { password, ...dataWithoutPassword } = validatedData.data;
-          const dataWithHash = {
-            ...dataWithoutPassword,
-            passwordHash: hashedPassword,
-          };
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, ...dataWithoutPassword } = validatedData.data;
+        const dataWithHash = {
+          ...dataWithoutPassword,
+          passwordHash: hashedPassword,
+        };
 
-          const updatedUser = await prisma.user.update({
-            where: { username: req.user?.username },
-            data: { ...dataWithHash },
-          });
-
-          responseJSON.success = true;
-          responseJSON.message = "User updated successfully.";
-          responseJSON.data = {
-            id: updatedUser.id,
-            email: updatedUser.email,
-            username: updatedUser.username,
-          };
-          res.json(responseJSON);
-        } catch (error) {
-          responseJSON.success = false;
-          responseJSON.message = "User update failed.";
-
-          const errorData = formatPrismaError(error);
-
-          if (errorData) {
-            responseJSON.data = errorData;
-          }
-
-          console.log(error);
-          res.json(responseJSON);
-        }
+        updateUser(req, responseJSON, dataWithHash);
       }
     );
   } else {
-    try {
-      const updatedUser = await prisma.user.update({
-        where: { username: req.user?.username },
-        data: { ...validatedData.data },
-      });
-
-      responseJSON.success = true;
-      responseJSON.message = "User updated successfully.";
-      responseJSON.data = {
-        id: updatedUser.id,
-        email: updatedUser.email,
-        username: updatedUser.username,
-      };
-      res.json(responseJSON);
-    } catch (error) {
-      responseJSON.success = false;
-      responseJSON.message = "User update failed.";
-
-      const errorData = formatPrismaError(error);
-
-      if (errorData) {
-        responseJSON.data = errorData;
-      }
-
-      console.log(error);
-      res.json(responseJSON);
-    }
+    updateUser(req, responseJSON, validatedData.data);
   }
 });
 
