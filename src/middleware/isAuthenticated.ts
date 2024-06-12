@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import passport, { AuthenticateCallback } from "passport";
 import { iResponseJSON } from "../lib/types";
 
-const isAuthenticated = (isAdmin: boolean = false) => {
+const isAuthenticated = (role: "admin" | "member" | "base" = "member") => {
   return (req: Request, res: Response, next: NextFunction) => {
     const callback: AuthenticateCallback = (err, user) => {
       if (err) {
@@ -16,7 +16,7 @@ const isAuthenticated = (isAdmin: boolean = false) => {
         res.json(responseJSON);
         return;
       }
-      if (isAdmin) {
+      if (role === "admin") {
         // Do stuff
       }
       req.user = user;
