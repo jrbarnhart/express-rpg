@@ -15,6 +15,7 @@ datasource db {
 
 model User {
   id           Int         @id @default(autoincrement())
+  role         UserRole    @default(BASE)
   email        String      @unique
   username     String      @unique
   passwordHash String
@@ -22,6 +23,12 @@ model User {
   pveBattles   PVEBattle[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+  BASE
 }
 
 model Pet {
