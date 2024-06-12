@@ -8,16 +8,17 @@ const isAuthenticated = (role: "admin" | "member" | "base" = "member") => {
       if (err) {
         return next(err);
       }
+      const responseJSON: iResponseJSON = {
+        success: false,
+        message: "Authorization required. Check credentials and try again.",
+      };
       if (!user) {
-        const responseJSON: iResponseJSON = {
-          success: false,
-          message: "Authorization required. Check credentials and try again.",
-        };
         res.json(responseJSON);
         return;
       }
       if (role === "admin") {
-        // Do stuff
+        res.json(responseJSON);
+        return;
       }
       req.user = user;
       next();
