@@ -15,7 +15,7 @@ const app = express();
 app.use(logger("dev"));
 app.use(express.json());
 
-// Authentication
+// Ensure required env variables exist
 app.use(verifyTokenSecret);
 
 // Routes
