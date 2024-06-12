@@ -14,7 +14,7 @@ passport.use(
   new JwtStrategy(opts, async (payload, done) => {
     try {
       const user = await prisma.user.findUnique({
-        where: { username: payload.username },
+        where: { id: payload.id },
       });
       if (!user) {
         return done(null, false, { message: "Incorrect username" });
