@@ -17,3 +17,9 @@ export interface iResponseDataUser {
 export interface iResponseDataToken {
   accessToken: string;
 }
+
+export interface iValidatedUserData {
+  email?: string | undefined;
+  username?: string | undefined;
+  password?: string | undefined;
+}
