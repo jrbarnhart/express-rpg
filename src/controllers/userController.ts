@@ -188,7 +188,6 @@ const user_update = asyncHandler(async (req, res, next) => {
   }
 
   if (validatedData.data.password) {
-    console.log("Password in data path");
     bcrypt.hash(
       validatedData.data.password,
       10,
@@ -217,10 +216,8 @@ const user_update = asyncHandler(async (req, res, next) => {
             email: updatedUser.email,
             username: updatedUser.username,
           };
-          console.log("Sent password in data res");
           res.json(responseJSON);
         } catch (error) {
-          console.log("Error path for password  in data");
           responseJSON.success = false;
           responseJSON.message = "User update failed.";
 
@@ -236,7 +233,6 @@ const user_update = asyncHandler(async (req, res, next) => {
       }
     );
   } else {
-    console.log("No password in data path");
     try {
       const updatedUser = await prisma.user.update({
         where: { username: req.user?.username },
@@ -265,20 +261,6 @@ const user_update = asyncHandler(async (req, res, next) => {
       res.json(responseJSON);
     }
   }
-
-  /*   const user = await prisma.user.update({
-    where: { username: req.user.username },
-    data: {}
-  });
-
-  if (!user) {
-    responseJSON.message = "Update failed. Please try again."
-    res.json(responseJSON);
-    return;
-  } */
-
-  responseJSON.success = true;
-  res.json(responseJSON);
 });
 
 const user_login = asyncHandler(async (req, res) => {
