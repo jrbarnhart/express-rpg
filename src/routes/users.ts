@@ -6,7 +6,7 @@ import isAuthenticated from "../middleware/isAuthenticated";
 usersRouter.post("/login", userController.user_login);
 
 usersRouter.get("/:id", userController.user_get);
-usersRouter.put("/:id", isAuthenticated, userController.user_update);
+usersRouter.put("/:id", isAuthenticated(), userController.user_update);
 
 usersRouter.get("/", userController.users_list);
 usersRouter.post("/", userController.user_create);
