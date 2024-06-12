@@ -297,12 +297,25 @@ const user_login = asyncHandler(async (req, res) => {
   res.json(responseJSON);
 });
 
+const user_upgrade = asyncHandler(async (req, res) => {
+  const responseJSON: iResponseJSON = {
+    success: false,
+  };
+
+  if (!req.body.data) {
+    responseJSON.message = "Upgrade data required.";
+    res.json(responseJSON);
+    return;
+  }
+});
+
 const userController = {
   users_list,
   user_get,
   user_create,
   user_update,
   user_login,
+  user_upgrade,
 };
 
 export default userController;
