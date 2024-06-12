@@ -1,19 +1,19 @@
 export interface iResponseJSON {
   success: true | false;
   message?: string;
-  data?: iUserData | iErrorData | iAccessTokenData;
+  data?: iResponseDataUser | iResponseDataError | iResponseDataToken;
 }
 
-export interface iErrorData {
+export interface iResponseDataError {
   errors: Record<string, string[]>;
 }
 
-export interface iUserData {
+export interface iResponseDataUser {
   id: number;
   username: string;
   email: string;
 }
 
-export interface iAccessTokenData {
+export interface iResponseDataToken {
   accessToken: string;
 }
