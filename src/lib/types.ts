@@ -1,3 +1,5 @@
+import { UserRole } from "@prisma/client";
+
 export interface iResponseJSON {
   success: true | false;
   message?: string;
@@ -12,6 +14,7 @@ export interface iResponseDataUser {
   id: number;
   username: string;
   email: string;
+  role: UserRole;
 }
 
 export interface iResponseDataToken {

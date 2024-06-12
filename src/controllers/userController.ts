@@ -75,7 +75,13 @@ const user_get = asyncHandler(async (req, res) => {
   const userId = parseInt(req.params.id);
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, username: true, email: true, passwordHash: false },
+    select: {
+      id: true,
+      role: true,
+      username: true,
+      email: true,
+      passwordHash: false,
+    },
   });
   if (!user) {
     const responseJSON: iResponseJSON = {
@@ -136,6 +142,7 @@ const user_create = asyncHandler(async (req, res, next) => {
           id: newUser.id,
           email: newUser.email,
           username: newUser.username,
+          role: newUser.role,
         },
       };
 
@@ -177,6 +184,7 @@ const user_update = asyncHandler(async (req, res, next) => {
         id: updatedUser.id,
         email: updatedUser.email,
         username: updatedUser.username,
+        role: updatedUser.role,
       };
       res.json(responseJSON);
     } catch (error) {
