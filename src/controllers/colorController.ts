@@ -1,10 +1,9 @@
 import asyncHandler from "express-async-handler";
 import validateRequestData from "../lib/zod/validateRequestData";
 import { CreateColorSchema, UpdateColorSchema } from "../lib/zod/Color";
-import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 import prisma from "../lib/prisma/prisma";
 import sendResponse from "../lib/controllerUtils/sendResponse";
-import formatPrismaError from "../lib/prisma/handlePrismaError";
+import { handlePrismaError } from "../lib/prisma/handlePrismaError";
 
 const colors_list = asyncHandler(async (req, res) => {
   const allColors = await prisma.color.findMany();
@@ -26,13 +25,7 @@ const color_create = asyncHandler(async (req, res) => {
 
     sendResponse(res, "New color added.", newColor);
   } catch (error) {
-    const formattedPrismaError = formatPrismaError(error);
-    console.log(error);
-    sendErrorResponse(
-      res,
-      "Error adding color to database.",
-      formattedPrismaError
-    );
+    handlePrismaError(error, res, "Error while adding color to database.");
   }
 });
 
@@ -49,13 +42,7 @@ const color_update = asyncHandler(async (req, res) => {
 
     sendResponse(res, "Color updated successfully.", updatedColor);
   } catch (error) {
-    const formattedPrismaError = formatPrismaError(error);
-    console.log(error);
-    sendErrorResponse(
-      res,
-      "Error adding color to database.",
-      formattedPrismaError
-    );
+    handlePrismaError(error, res, "Error while updating color.");
   }
 });
 
