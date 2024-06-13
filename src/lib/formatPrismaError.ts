@@ -12,9 +12,7 @@ const formatPrismaError = (error: unknown) => {
         const errorData: iResponseDataError = {
           errors: {},
         };
-        errorData.errors[target] = [
-          `That ${target} is already in use. Please log in or choose another ${target}.`,
-        ];
+        errorData.errors[target] = [`That ${target} is already in use.`];
         return errorData;
       }
     }
