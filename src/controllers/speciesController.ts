@@ -1,9 +1,9 @@
 import asyncHandler from "express-async-handler";
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma/prisma";
 import sendResponse from "../lib/sendResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
 import { CreateSpeciesSchema } from "../lib/zod/Species";
-import formatPrismaError from "../lib/formatPrismaError";
+import formatPrismaError from "../lib/prisma/formatPrismaError";
 import sendErrorResponse from "../lib/sendErrorResponse";
 
 const species_list = asyncHandler(async (req, res) => {

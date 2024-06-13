@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { iResponseDataError } from "./types/types";
+import { iResponseDataError } from "../types/types";
 
 const formatPrismaError = (error: unknown) => {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {

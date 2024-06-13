@@ -2,9 +2,9 @@ import asyncHandler from "express-async-handler";
 import { z } from "zod";
 import { iResponseJSON, iValidatedUserData } from "../lib/types/types";
 import bcrypt from "bcryptjs";
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma/prisma";
 import jwt from "jsonwebtoken";
-import formatPrismaError from "../lib/formatPrismaError";
+import formatPrismaError from "../lib/prisma/formatPrismaError";
 import { Request } from "express";
 import { UserRole } from "@prisma/client";
 

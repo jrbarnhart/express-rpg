@@ -2,9 +2,9 @@ import asyncHandler from "express-async-handler";
 import validateRequestData from "../lib/zod/validateRequestData";
 import { CreateColorSchema, UpdateColorSchema } from "../lib/zod/Color";
 import sendErrorResponse from "../lib/sendErrorResponse";
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma/prisma";
 import sendResponse from "../lib/sendResponse";
-import formatPrismaError from "../lib/formatPrismaError";
+import formatPrismaError from "../lib/prisma/formatPrismaError";
 
 const colors_list = asyncHandler(async (req, res) => {
   const allColors = await prisma.color.findMany();
