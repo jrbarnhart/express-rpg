@@ -1,27 +1,32 @@
-import { z } from "zod";
-import { iResponseDataError } from "../types";
+import { Response } from "express";
+import sendErrorResponse from "../sendErrorResponse";
+import { ZodSchema, z } from "zod";
 
 const validateRequestData = (
   data: unknown,
-  schema: z.ZodSchema<unknown>
-): { success: boolean; errorData?: iResponseDataError; data?: unknown } => {
+  res: Response,
+  schema: ZodSchema
+) => {
   if (!data) {
-    return {
-      success: false,
-      errorData: { errors: { data: ["No request data was found."] } },
-    };
+    sendErrorResponse(res, "Request body data was not found.");
+    return false;
   }
 
-  const validatedData = schema.safeParse(data);
+  type ValidationErrors = z.inferFlattenedErrors<typeof schema>;
 
-  if (!validatedData.success) {
-    return {
-      success: false,
-      errorData: { errors: validatedData.error.flatten().fieldErrors },
-    };
+  const zodResult = schema.safeParse(data);
+
+  if (!zodResult.success) {
+    const flattenedErrors: ValidationErrors = zodResult.error.flatten();
+    sendErrorResponse(
+      res,
+      "Incorrect data format.",
+      flattenedErrors.fieldErrors
+    );
+    return false;
   }
 
-  return { success: true, data: validatedData.data };
+  return zodResult.data;
 };
 
 export default validateRequestData;
