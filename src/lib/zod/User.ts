@@ -59,3 +59,13 @@ export const UpdateUserSchema = z.object({
     .regex(/^\S*$/, { message: "Password must not contain spaces" })
     .optional(),
 });
+
+export const LoginUserSchema = z.object({
+  username: z.string().trim().max(300),
+  password: z.string().trim().max(300),
+});
+
+export const UpgradeUserSchema = z.object({
+  accessTarget: z.string().trim().toUpperCase(),
+  accessSecret: z.string().trim(),
+});
