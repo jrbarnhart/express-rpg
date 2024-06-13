@@ -4,7 +4,7 @@ import { iResponseJSON, iValidatedUserData } from "../lib/types/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma/prisma";
 import jwt from "jsonwebtoken";
-import formatPrismaError from "../lib/prisma/handlePrismaError";
+import handlePrismaError from "../lib/prisma/handlePrismaError";
 import { Request } from "express";
 import { UserRole } from "@prisma/client";
 
@@ -159,20 +159,7 @@ const user_create = asyncHandler(async (req, res, next) => {
 
       res.json(responseJSON);
     } catch (error) {
-      // Handle Prisma errors
-      const responseJSON: iResponseJSON = {
-        success: false,
-        message: "User creation failed.",
-      };
-
-      const errorData = formatPrismaError(error);
-
-      if (errorData) {
-        responseJSON.data = errorData;
-      }
-
-      console.log(error);
-      res.json(responseJSON);
+      handlePrismaError(error, res, "Error while adding user to database.");
     }
   });
 });
@@ -199,17 +186,7 @@ const user_update = asyncHandler(async (req, res, next) => {
       };
       res.json(responseJSON);
     } catch (error) {
-      responseJSON.success = false;
-      responseJSON.message = "User update failed.";
-
-      const errorData = formatPrismaError(error);
-
-      if (errorData) {
-        responseJSON.data = errorData;
-      }
-
-      console.log(error);
-      res.json(responseJSON);
+      handlePrismaError(error, res, "Error while updating user.");
     }
   };
 
