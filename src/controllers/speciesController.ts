@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import prisma from "../lib/prisma";
 import sendResponse from "../lib/sendResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
-import { SpeciesSchema } from "../lib/zod/Species";
+import { CreateSpeciesSchema } from "../lib/zod/Species";
 import formatPrismaError from "../lib/formatPrismaError";
 import sendErrorResponse from "../lib/sendErrorResponse";
 
@@ -13,7 +13,7 @@ const species_list = asyncHandler(async (req, res) => {
 });
 
 const species_create = asyncHandler(async (req, res) => {
-  const data = validateRequestData(req.body.data, res, SpeciesSchema);
+  const data = validateRequestData(req.body.data, res, CreateSpeciesSchema);
 
   if (!data) return;
 
