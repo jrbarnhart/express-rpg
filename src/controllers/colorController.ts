@@ -1,11 +1,10 @@
 import asyncHandler from "express-async-handler";
 import validateRequestData from "../lib/zod/validateRequestData";
-import { ColorSchema } from "../lib/zod/Color";
+import { CreateColorSchema, UpdateColorSchema } from "../lib/zod/Color";
 import sendErrorResponse from "../lib/sendErrorResponse";
 import prisma from "../lib/prisma";
 import sendResponse from "../lib/sendResponse";
 import formatPrismaError from "../lib/formatPrismaError";
-import { UpdateSpeciesSchema } from "../lib/zod/Species";
 
 const colors_list = asyncHandler(async (req, res) => {
   const allColors = await prisma.color.findMany();
@@ -14,7 +13,7 @@ const colors_list = asyncHandler(async (req, res) => {
 });
 
 const color_create = asyncHandler(async (req, res) => {
-  const data = validateRequestData(req.body.data, res, ColorSchema);
+  const data = validateRequestData(req.body.data, res, CreateColorSchema);
 
   if (!data) return; // Error response already sent
 
@@ -38,12 +37,17 @@ const color_create = asyncHandler(async (req, res) => {
 });
 
 const color_update = asyncHandler(async (req, res) => {
-  const data = validateRequestData(req.body.data, res, UpdateSpeciesSchema);
+  const data = validateRequestData(req.body.data, res, UpdateColorSchema);
 
   if (!data) return;
 
   try {
-    // const updatedSpecies = await prisma.species.update({where: {id: data.id}, data: {}})
+    const updatedColor = await prisma.color.update({
+      where: { id: data.id },
+      data: { name: data.name },
+    });
+
+    sendResponse(res, "Color updated successfully.", updatedColor);
   } catch (error) {
     const formattedPrismaError = formatPrismaError(error);
     console.log(error);
