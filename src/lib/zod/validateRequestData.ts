@@ -2,11 +2,11 @@ import { Response } from "express";
 import sendErrorResponse from "../sendErrorResponse";
 import { ZodSchema, z } from "zod";
 
-const validateRequestData = (
+const validateRequestData = <T>(
   data: unknown,
   res: Response,
-  schema: ZodSchema
-) => {
+  schema: ZodSchema<T>
+): T | false => {
   if (!data) {
     sendErrorResponse(res, "Request body data was not found.");
     return false;
