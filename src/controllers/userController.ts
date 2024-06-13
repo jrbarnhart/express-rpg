@@ -1,5 +1,4 @@
 import asyncHandler from "express-async-handler";
-import { z } from "zod";
 import { iResponseJSON, iValidatedUserData } from "../lib/types/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma/prisma";
@@ -7,75 +6,12 @@ import jwt from "jsonwebtoken";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 import { Request } from "express";
 import { UserRole } from "@prisma/client";
-
-const NewUserSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .email({
-      message: "Must be a valid email format. Example: user@service.com",
-    })
-    .min(5, { message: "Email must be at least 5 characters long" })
-    .max(320, { message: "Email must be at most 320 characters long" }),
-  username: z
-    .string()
-    .trim()
-    .min(5, { message: "Username must be at least 5 characters long" })
-    .max(64, { message: "Username must be at most 64 characters long" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
-    .max(100, { message: "Password must be at most 100 characters long" })
-    .regex(/[A-Z]/, {
-      message: "Password must contain at least one uppercase letter",
-    })
-    .regex(/[a-z]/, {
-      message: "Password must contain at least one lowercase letter",
-    })
-    .regex(/[0-9]/, { message: "Password must contain at least one number" })
-    .regex(/^\S*$/, { message: "Password must not contain spaces" }),
-});
-
-const UpdateUserSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .email({
-      message: "Must be a valid email format. Example: user@service.com",
-    })
-    .min(5, { message: "Email must be at least 5 characters long" })
-    .max(320, { message: "Email must be at most 320 characters long" })
-    .optional(),
-  username: z
-    .string()
-    .trim()
-    .min(5, { message: "Username must be at least 5 characters long" })
-    .max(64, { message: "Username must be at most 64 characters long" })
-    .optional(),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
-    .max(100, { message: "Password must be at most 100 characters long" })
-    .regex(/[A-Z]/, {
-      message: "Password must contain at least one uppercase letter",
-    })
-    .regex(/[a-z]/, {
-      message: "Password must contain at least one lowercase letter",
-    })
-    .regex(/[0-9]/, { message: "Password must contain at least one number" })
-    .regex(/^\S*$/, { message: "Password must not contain spaces" })
-    .optional(),
-});
-
-const LoginSchema = z.object({
-  username: z.string().trim().max(300),
-  password: z.string().trim().max(300),
-});
-
-const UpgradeSchema = z.object({
-  accessTarget: z.string().trim().toUpperCase(),
-  accessSecret: z.string().trim(),
-});
+import {
+  LoginUserSchema,
+  NewUserSchema,
+  UpdateUserSchema,
+  UpgradeUserSchema,
+} from "../lib/zod/User";
 
 const users_list = asyncHandler(async (req, res) => {
   const userCount = await prisma.user.count();
@@ -253,7 +189,7 @@ const user_login = asyncHandler(async (req, res) => {
     return;
   }
 
-  const validatedData = LoginSchema.safeParse(req.body.data);
+  const validatedData = LoginUserSchema.safeParse(req.body.data);
   if (!validatedData.success) {
     responseJSON.message = "Incorrect login data format.";
     res.json(responseJSON);
@@ -311,7 +247,7 @@ const user_upgrade = asyncHandler(async (req, res) => {
     return;
   }
 
-  const validatedData = UpgradeSchema.safeParse(req.body.data);
+  const validatedData = UpgradeUserSchema.safeParse(req.body.data);
   if (!validatedData.success) {
     responseJSON.message = "Incorrect upgrade data format.";
     res.json(responseJSON);
