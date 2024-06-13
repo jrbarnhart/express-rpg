@@ -21,7 +21,7 @@ const color_create = asyncHandler(async (req, res) => {
     sendResponse(res, "New color added.", newColor);
   } catch (error) {
     const formattedPrismaError = formatPrismaError(error);
-
+    console.log(error);
     sendErrorResponse(
       res,
       "Error adding color to database.",
