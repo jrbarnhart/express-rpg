@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { iResponseDataError } from "../types/types";
+import sendErrorResponse from "../controllerUtils/sendErrorResponse";
+import { Response } from "express";
 
 const formatPrismaError = (error: unknown) => {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -18,6 +20,15 @@ const formatPrismaError = (error: unknown) => {
     }
   }
   return undefined;
+};
+
+export const handlePrismaError = (
+  error: unknown,
+  res: Response,
+  message: string
+) => {
+  console.log(error);
+  sendErrorResponse(res, message, formatPrismaError(error));
 };
 
 export default formatPrismaError;
