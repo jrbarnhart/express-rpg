@@ -66,6 +66,11 @@ const UpdateUserSchema = z.object({
     .optional(),
 });
 
+const LoginSchema = z.object({
+  username: z.string().trim().max(300),
+  password: z.string().trim().max(300),
+});
+
 const users_list = asyncHandler(async (req, res) => {
   const userCount = await prisma.user.count();
   res.json({ userCount });
@@ -265,9 +270,15 @@ const user_login = asyncHandler(async (req, res) => {
     return;
   }
 
-  const data = req.body.data;
+  const validatedData = LoginSchema.safeParse(req.body.data);
+  if (!validatedData.success) {
+    responseJSON.message = "Incorrect login data format.";
+    res.json(responseJSON);
+    return;
+  }
+
   const user = await prisma.user.findUnique({
-    where: { username: data.username },
+    where: { username: validatedData.data.username },
   });
   if (!user) {
     responseJSON.message = "Login failed. User not found.";
@@ -275,7 +286,10 @@ const user_login = asyncHandler(async (req, res) => {
     return;
   }
 
-  const match = await bcrypt.compare(data.password, user.passwordHash);
+  const match = await bcrypt.compare(
+    validatedData.data.password,
+    user.passwordHash
+  );
   if (!match) {
     responseJSON.message = "Login failed. Incorrect password.";
     res.json(responseJSON);
