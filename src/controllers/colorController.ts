@@ -7,11 +7,9 @@ import sendResponse from "../lib/sendResponse";
 import formatPrismaError from "../lib/formatPrismaError";
 
 const colors_list = asyncHandler(async (req, res) => {
-  const allColors = await prisma.color.findMany({ select: { name: true } });
+  const allColors = await prisma.color.findMany();
 
-  const colorNames = { colors: allColors.map((entry) => entry.name) };
-
-  sendResponse(res, "All colors retrieved.", colorNames);
+  sendResponse(res, "All colors retrieved.", allColors);
 });
 
 const color_create = asyncHandler(async (req, res) => {
