@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import usersRouter from "./routes/users";
 import petsRouter from "./routes/pets";
+import colorsRouter from "./routes/colors";
 import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
 import verifyTokenSecret from "./middleware/verifyTokenSecret";
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 });
 app.use("/users", usersRouter);
 app.use("/pets", petsRouter);
+app.use("/colors", colorsRouter);
 
 // 404
 app.use((req, res) => {
