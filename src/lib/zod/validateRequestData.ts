@@ -18,11 +18,9 @@ const validateRequestData = (
 
   if (!zodResult.success) {
     const flattenedErrors: ValidationErrors = zodResult.error.flatten();
-    sendErrorResponse(
-      res,
-      "Incorrect data format.",
-      flattenedErrors.fieldErrors
-    );
+    sendErrorResponse(res, "Incorrect data format.", {
+      errors: flattenedErrors.fieldErrors,
+    });
     return false;
   }
 
