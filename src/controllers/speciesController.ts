@@ -3,8 +3,7 @@ import prisma from "../lib/prisma/prisma";
 import sendResponse from "../lib/controllerUtils/sendResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
 import { CreateSpeciesSchema } from "../lib/zod/Species";
-import formatPrismaError from "../lib/prisma/handlePrismaError";
-import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
+import handlePrismaError from "../lib/prisma/handlePrismaError";
 
 const species_list = asyncHandler(async (req, res) => {
   const allSpecies = await prisma.species.findMany();
@@ -27,13 +26,7 @@ const species_create = asyncHandler(async (req, res) => {
 
     sendResponse(res, "New species added.", newSpecies);
   } catch (error) {
-    const formattedPrismaError = formatPrismaError(error);
-    console.log(error);
-    sendErrorResponse(
-      res,
-      "Error adding species to database.",
-      formattedPrismaError
-    );
+    handlePrismaError(error, res, "Error while adding species to database.");
   }
 });
 
