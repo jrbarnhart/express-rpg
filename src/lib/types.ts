@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { Color, UserRole } from "@prisma/client";
 
 export interface iResponseJSON {
   success: true | false;
@@ -9,7 +9,8 @@ export interface iResponseJSON {
 export type ResponseData =
   | iResponseDataError
   | iResponseDataUser
-  | iResponseDataToken;
+  | iResponseDataToken
+  | Color;
 
 export interface iResponseDataError {
   errors: { [key: string]: string[] | undefined };
