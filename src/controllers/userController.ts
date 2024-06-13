@@ -4,7 +4,7 @@ import { iResponseJSON, iValidatedUserData } from "../lib/types/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma/prisma";
 import jwt from "jsonwebtoken";
-import formatPrismaError from "../lib/prisma/formatPrismaError";
+import formatPrismaError from "../lib/prisma/handlePrismaError";
 import { Request } from "express";
 import { UserRole } from "@prisma/client";
 
