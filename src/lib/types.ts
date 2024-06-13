@@ -3,8 +3,13 @@ import { UserRole } from "@prisma/client";
 export interface iResponseJSON {
   success: true | false;
   message?: string;
-  data?: iResponseDataUser | iResponseDataError | iResponseDataToken;
+  data?: ResponseData;
 }
+
+export type ResponseData =
+  | iResponseDataError
+  | iResponseDataUser
+  | iResponseDataToken;
 
 export interface iResponseDataError {
   errors: { [key: string]: string[] | undefined };
