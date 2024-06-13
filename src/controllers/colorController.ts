@@ -5,6 +5,7 @@ import sendErrorResponse from "../lib/sendErrorResponse";
 import prisma from "../lib/prisma";
 import sendResponse from "../lib/sendResponse";
 import formatPrismaError from "../lib/formatPrismaError";
+import { UpdateSpeciesSchema } from "../lib/zod/Species";
 
 const colors_list = asyncHandler(async (req, res) => {
   const allColors = await prisma.color.findMany();
@@ -36,9 +37,28 @@ const color_create = asyncHandler(async (req, res) => {
   }
 });
 
+const color_update = asyncHandler(async (req, res) => {
+  const data = validateRequestData(req.body.data, res, UpdateSpeciesSchema);
+
+  if (!data) return;
+
+  try {
+    // const updatedSpecies = await prisma.species.update({where: {id: data.id}, data: {}})
+  } catch (error) {
+    const formattedPrismaError = formatPrismaError(error);
+    console.log(error);
+    sendErrorResponse(
+      res,
+      "Error adding color to database.",
+      formattedPrismaError
+    );
+  }
+});
+
 const colorController = {
   colors_list,
   color_create,
+  color_update,
 };
 
 export default colorController;
