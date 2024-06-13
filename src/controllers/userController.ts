@@ -71,6 +71,11 @@ const LoginSchema = z.object({
   password: z.string().trim().max(300),
 });
 
+const UpgradeSchema = z.object({
+  accessTarget: z.string().trim().toUpperCase(),
+  accessSecret: z.string().trim(),
+});
+
 const users_list = asyncHandler(async (req, res) => {
   const userCount = await prisma.user.count();
   res.json({ userCount });
@@ -316,11 +321,26 @@ const user_upgrade = asyncHandler(async (req, res) => {
     success: false,
   };
 
+  if (req.user?.id.toString() !== req.params.id) {
+    responseJSON.message = "Access denied. You cannot update this user.";
+    res.json(responseJSON);
+    return;
+  }
+
   if (!req.body.data) {
     responseJSON.message = "Upgrade data required.";
     res.json(responseJSON);
     return;
   }
+
+  const validatedData = UpgradeSchema.safeParse(req.body.data);
+  if (!validatedData.success) {
+    responseJSON.message = "Incorrect upgrade data format.";
+    res.json(responseJSON);
+    return;
+  }
+
+  res.json(responseJSON);
 });
 
 const userController = {
