@@ -7,7 +7,7 @@ export interface iResponseJSON {
 }
 
 export interface iResponseDataError {
-  errors: Record<string, string[]>;
+  errors: { [key: string]: string[] | undefined };
 }
 
 export interface iResponseDataUser {
