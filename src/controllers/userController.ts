@@ -340,6 +340,44 @@ const user_upgrade = asyncHandler(async (req, res) => {
     return;
   }
 
+  const { accessTarget, accessSecret } = validatedData.data;
+
+  if (!process.env.ADMIN_SECRET || !process.env.MEMBER_SECRET) {
+    (responseJSON.message = "There was an error. Please try again shortly."),
+      console.error(
+        "Access secrets not found. These are required and must be configured as local variables for user upgrades to work."
+      );
+    res.json(responseJSON);
+    return;
+  }
+
+  if (accessTarget === "ADMIN" && accessSecret === process.env.ADMIN_SECRET) {
+    const upgradedUser = await prisma.user.update({
+      where: { id: parseInt(req.params.id) },
+      data: { role: "ADMIN" },
+      select: {
+        id: true,
+        role: true,
+        username: true,
+        email: true,
+        passwordHash: false,
+      },
+    });
+    if (!upgradedUser) {
+      responseJSON.message = "There was an error while upgrading the user.";
+      res.json(responseJSON);
+      return;
+    }
+    responseJSON.message = "User upgraded to admin.";
+    responseJSON.data = upgradedUser;
+    res.json(responseJSON);
+    return;
+  }
+
+  if (accessTarget === "MEMBER" && accessSecret === process.env.MEMBER_SERET) {
+  }
+
+  responseJSON.message = "Failed to upgrade user.";
   res.json(responseJSON);
 });
 
