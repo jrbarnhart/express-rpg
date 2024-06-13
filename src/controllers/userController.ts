@@ -12,10 +12,21 @@ import {
   UpdateUserSchema,
   UpgradeUserSchema,
 } from "../lib/zod/User";
+import sendResponse from "../lib/controllerUtils/sendResponse";
 
 const users_list = asyncHandler(async (req, res) => {
-  const userCount = await prisma.user.count();
-  res.json({ userCount });
+  const allUsers = await prisma.user.findMany({
+    select: {
+      id: true,
+      role: true,
+      email: true,
+      username: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  sendResponse(res, "User list retrieved successfully.", allUsers);
 });
 
 const user_get = asyncHandler(async (req, res) => {
