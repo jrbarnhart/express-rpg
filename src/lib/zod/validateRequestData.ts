@@ -1,5 +1,5 @@
 import { Response } from "express";
-import sendErrorResponse from "../sendErrorResponse";
+import sendErrorResponse from "../controllerUtils/sendErrorResponse";
 import { ZodSchema } from "zod";
 
 const validateRequestData = <T>(

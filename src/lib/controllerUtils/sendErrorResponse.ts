@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { iResponseDataError, iResponseJSON } from "./types/types";
+import { iResponseDataError, iResponseJSON } from "../types/types";
 
 const sendErrorResponse = (
   res: Response,
