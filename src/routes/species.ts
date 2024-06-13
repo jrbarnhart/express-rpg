@@ -14,3 +14,5 @@ speciesRouter.post(
   isAuthenticated("ADMIN"),
   speciesController.species_create
 );
+
+export default speciesRouter;
