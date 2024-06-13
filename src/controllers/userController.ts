@@ -6,6 +6,7 @@ import prisma from "../lib/prisma";
 import jwt from "jsonwebtoken";
 import formatPrismaError from "../lib/formatPrismaError";
 import { Request } from "express";
+import { UserRole } from "@prisma/client";
 
 const NewUserSchema = z.object({
   email: z
@@ -351,34 +352,52 @@ const user_upgrade = asyncHandler(async (req, res) => {
     return;
   }
 
-  if (accessTarget === "ADMIN" && accessSecret === process.env.ADMIN_SECRET) {
-    const upgradedUser = await prisma.user.update({
-      where: { id: parseInt(req.params.id) },
-      data: { role: "ADMIN" },
-      select: {
-        id: true,
-        role: true,
-        username: true,
-        email: true,
-        passwordHash: false,
-      },
-    });
-    if (!upgradedUser) {
-      responseJSON.message = "There was an error while upgrading the user.";
-      res.json(responseJSON);
-      return;
-    }
-    responseJSON.message = "User upgraded to admin.";
-    responseJSON.data = upgradedUser;
+  if (!(accessTarget in UserRole)) {
+    responseJSON.message = "Incorrect upgrade data format.";
     res.json(responseJSON);
     return;
   }
 
-  if (accessTarget === "MEMBER" && accessSecret === process.env.MEMBER_SERET) {
+  if (accessTarget === "ADMIN" && accessSecret !== process.env.ADMIN_SECRET) {
+    responseJSON.message = "Access denied. Check credentials and try again.";
+    res.json(responseJSON);
+    return;
   }
 
-  responseJSON.message = "Failed to upgrade user.";
+  if (accessTarget === "MEMBER" && accessSecret !== process.env.MEMBER_SECRET) {
+    responseJSON.message = "Access denied. Check credentials and try again.";
+    res.json(responseJSON);
+    return;
+  }
+
+  if (accessTarget === "BASE") {
+    responseJSON.message = "Cannot upgrade to base account.";
+    res.json(responseJSON);
+    return;
+  }
+
+  const upgradedUser = await prisma.user.update({
+    where: { id: parseInt(req.params.id) },
+    data: { role: accessTarget as UserRole },
+    select: {
+      id: true,
+      role: true,
+      username: true,
+      email: true,
+      passwordHash: false,
+    },
+  });
+  if (!upgradedUser) {
+    responseJSON.message =
+      "There was an unknown error while upgrading the user.";
+    res.json(responseJSON);
+    return;
+  }
+  responseJSON.success = true;
+  responseJSON.message = `User upgraded to ${upgradedUser.role.toLowerCase()}.`;
+  responseJSON.data = upgradedUser;
   res.json(responseJSON);
+  return;
 });
 
 const userController = {
