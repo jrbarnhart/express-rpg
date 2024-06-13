@@ -22,13 +22,9 @@ const formatPrismaError = (error: unknown) => {
   return undefined;
 };
 
-export const handlePrismaError = (
-  error: unknown,
-  res: Response,
-  message: string
-) => {
+const handlePrismaError = (error: unknown, res: Response, message: string) => {
   console.log(error);
   sendErrorResponse(res, message, formatPrismaError(error));
 };
 
-export default formatPrismaError;
+export default handlePrismaError;
