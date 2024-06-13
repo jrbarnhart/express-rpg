@@ -7,5 +7,5 @@ export const SpeciesSchema = z.object({
     .toLowerCase()
     .min(1, { message: "Name must be at least one character" })
     .max(32, { message: "Name must be at most 32 characters" }),
-  colors: z.array(z.number()).nonempty(),
+  colorIds: z.array(z.number()).nonempty(),
 });
