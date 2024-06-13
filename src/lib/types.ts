@@ -11,7 +11,7 @@ export type ResponseData =
   | iResponseDataUser
   | iResponseDataToken
   | Color
-  | iResponseDataColorList
+  | Color[]
   | Species
   | Species[];
 
@@ -34,8 +34,4 @@ export interface iValidatedUserData {
   email?: string | undefined;
   username?: string | undefined;
   password?: string | undefined;
-}
-
-export interface iResponseDataColorList {
-  colors: string[];
 }
