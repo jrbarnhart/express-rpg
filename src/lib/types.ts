@@ -10,7 +10,8 @@ export type ResponseData =
   | iResponseDataError
   | iResponseDataUser
   | iResponseDataToken
-  | Color;
+  | Color
+  | iResponseDataColorList;
 
 export interface iResponseDataError {
   errors: { [key: string]: string[] | undefined };
@@ -31,4 +32,8 @@ export interface iValidatedUserData {
   email?: string | undefined;
   username?: string | undefined;
   password?: string | undefined;
+}
+
+export interface iResponseDataColorList {
+  colors: string[];
 }
