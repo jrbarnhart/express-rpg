@@ -1,9 +1,5 @@
 import asyncHandler from "express-async-handler";
-import {
-  UserPublic,
-  iResponseJSON,
-  iValidatedUserData,
-} from "../lib/types/types";
+import { UserPublic, iValidatedUserData } from "../lib/types/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma/prisma";
 import jwt from "jsonwebtoken";
