@@ -4,6 +4,7 @@ import usersRouter from "./routes/users";
 import petsRouter from "./routes/pets";
 import colorsRouter from "./routes/colors";
 import speciesRouter from "./routes/species";
+import npcTemplateRouter from "./routes/npcTemplates";
 import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
 import verifyTokenSecret from "./middleware/verifyTokenSecret";
@@ -28,6 +29,7 @@ app.use("/users", usersRouter);
 app.use("/pets", petsRouter);
 app.use("/colors", colorsRouter);
 app.use("/species", speciesRouter);
+app.use("/templates", npcTemplateRouter);
 
 // 404
 app.use((req, res) => {
