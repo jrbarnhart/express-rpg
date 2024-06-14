@@ -20,7 +20,7 @@ model User {
   username     String      @unique
   passwordHash String
   pets         Pet[]
-  pveBattles   PVEBattle[]
+  pveBattles   PveBattle[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 }
@@ -52,7 +52,7 @@ model Species {
   name      String        @unique
   colors    Color[]
   pets      Pet[]
-  templates NPCTemplate[]
+  templates NpcTemplate[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 }
@@ -62,15 +62,15 @@ model Color {
   name      String        @unique
   pets      Pet[]
   species   Species[]
-  templates NPCTemplate[]
+  templates NpcTemplate[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 }
 
-model NPCTemplate {
+model NpcTemplate {
   id        Int           @id @default(autoincrement())
   name      String        @unique
-  instances NPCInstance[]
+  instances NpcInstance[]
   species   Species       @relation(fields: [speciesId], references: [id], onDelete: Restrict)
   speciesId Int
   color     Color         @relation(fields: [colorId], references: [id], onDelete: Restrict)
@@ -81,25 +81,25 @@ model NPCTemplate {
   updatedAt DateTime      @updatedAt
 }
 
-model NPCInstance {
+model NpcInstance {
   id         Int         @id @default(autoincrement())
   name       String
-  template   NPCTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  template   NpcTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
   templateId Int
   health     Int
   mood       Int
-  battle     PVEBattle?  @relation(fields: [battleId], references: [id], onDelete: SetNull)
+  battle     PveBattle?  @relation(fields: [battleId], references: [id], onDelete: SetNull)
   battleId   Int?
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
 
-model PVEBattle {
+model PveBattle {
   id        Int           @id @default(autoincrement())
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   isActive  Boolean       @default(false)
-  opponents NPCInstance[]
+  opponents NpcInstance[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 }
