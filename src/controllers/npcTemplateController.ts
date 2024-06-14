@@ -7,16 +7,25 @@ import { CreateNpcTemplateSchema } from "../lib/zod/NpcTemplate";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 
 const npc_templates_list = asyncHandler(async (req, res) => {
-  const allNpcTemplates = await prisma.npcTemplate.findMany();
+  const allNpcTemplates = await prisma.npcTemplate.findMany({
+    include: {
+      species: { select: { name: true } },
+      color: { select: { name: true } },
+    },
+  });
   sendResponse(res, "All NPC Templates retrieved.", allNpcTemplates);
 });
 
 const npc_template_get = asyncHandler(async (req, res) => {
   const npcTemplate = await prisma.npcTemplate.findUnique({
     where: { id: parseInt(req.params.id) },
+    include: {
+      species: { select: { name: true } },
+      color: { select: { name: true } },
+    },
   });
   if (npcTemplate) {
-    sendResponse(res, "NYI", npcTemplate);
+    sendResponse(res, "NPC Template retrieved.", npcTemplate);
   } else {
     sendErrorResponse(res, "Cannot find template.");
   }
