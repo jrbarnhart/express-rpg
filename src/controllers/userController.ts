@@ -86,7 +86,6 @@ const user_create = asyncHandler(async (req, res, next) => {
 const user_update = asyncHandler(async (req, res, next) => {
   const updateUser = async (
     req: Request,
-    responseJSON: iResponseJSON,
     validatedUserData: iValidatedUserData
   ) => {
     try {
@@ -106,55 +105,32 @@ const user_update = asyncHandler(async (req, res, next) => {
     }
   };
 
-  const responseJSON: iResponseJSON = {
-    success: false,
-  };
-
   if (req.user?.id.toString() !== req.params.id) {
-    responseJSON.message = "Access denied. You cannot update this user.";
-    res.json(responseJSON);
+    sendErrorResponse(res, "Access denied. You cannot update this user.");
     return;
   }
 
-  const updatedUserData = req.body.data;
-  if (!updatedUserData) {
-    responseJSON.success = false;
-    responseJSON.message =
-      "No user data changes were found. Check request body format.";
-    res.json(responseJSON);
-    return;
-  }
+  const data = validateRequestData(req.body.data, res, UpdateUserSchema);
 
-  const validatedData = UpdateUserSchema.safeParse(updatedUserData);
-  if (!validatedData.success) {
-    responseJSON.success = false;
-    responseJSON.message = "User data changes invalid. Failed to update user.";
-    responseJSON.data = { errors: validatedData.error.flatten().fieldErrors };
-    res.json(responseJSON);
-    return;
-  }
+  if (!data) return;
 
-  if (validatedData.data.password) {
-    bcrypt.hash(
-      validatedData.data.password,
-      10,
-      async (err, hashedPassword) => {
-        if (err) {
-          next(err);
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password, ...dataWithoutPassword } = validatedData.data;
-        const dataWithHash = {
-          ...dataWithoutPassword,
-          passwordHash: hashedPassword,
-        };
-
-        updateUser(req, responseJSON, dataWithHash);
+  if (data.password) {
+    bcrypt.hash(data.password, 10, async (err, hashedPassword) => {
+      if (err) {
+        next(err);
       }
-    );
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...dataWithoutPassword } = data;
+      const dataWithHash = {
+        ...dataWithoutPassword,
+        passwordHash: hashedPassword,
+      };
+
+      updateUser(req, dataWithHash);
+    });
   } else {
-    updateUser(req, responseJSON, validatedData.data);
+    updateUser(req, data);
   }
 });
 
