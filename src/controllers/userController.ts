@@ -135,39 +135,21 @@ const user_update = asyncHandler(async (req, res, next) => {
 });
 
 const user_login = asyncHandler(async (req, res) => {
-  const responseJSON: iResponseJSON = {
-    success: false,
-  };
+  const data = validateRequestData(req.body.data, res, LoginUserSchema);
 
-  if (!req.body.data) {
-    responseJSON.message = "Login data required.";
-    res.json(responseJSON);
-    return;
-  }
-
-  const validatedData = LoginUserSchema.safeParse(req.body.data);
-  if (!validatedData.success) {
-    responseJSON.message = "Incorrect login data format.";
-    res.json(responseJSON);
-    return;
-  }
+  if (!data) return;
 
   const user = await prisma.user.findUnique({
-    where: { username: validatedData.data.username },
+    where: { username: data.username },
   });
   if (!user) {
-    responseJSON.message = "Login failed. User not found.";
-    res.json(responseJSON);
+    sendErrorResponse(res, "Login failed. Check credentials and try again.");
     return;
   }
 
-  const match = await bcrypt.compare(
-    validatedData.data.password,
-    user.passwordHash
-  );
+  const match = await bcrypt.compare(data.password, user.passwordHash);
   if (!match) {
-    responseJSON.message = "Login failed. Incorrect password.";
-    res.json(responseJSON);
+    sendErrorResponse(res, "Login failed. Check credentials and try again.");
     return;
   }
 
@@ -180,10 +162,7 @@ const user_login = asyncHandler(async (req, res) => {
     { expiresIn: "7d" }
   );
 
-  responseJSON.success = true;
-  responseJSON.message = "User logged in with returned token.";
-  responseJSON.data = { accessToken };
-  res.json(responseJSON);
+  sendResponse(res, "User logged in with returned token.", { accessToken });
 });
 
 const user_upgrade = asyncHandler(async (req, res) => {
