@@ -1,14 +1,22 @@
 import asyncHandler from "express-async-handler";
 import sendResponse from "../lib/controllerUtils/sendResponse";
+import prisma from "../lib/prisma/prisma";
+import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 
 const npc_templates_list = asyncHandler(async (req, res) => {
-  // fetch and return data
-  sendResponse(res, "NYI");
+  const allNpcTemplates = await prisma.npcTemplate.findMany();
+  sendResponse(res, "All NPC Templates retrieved.", allNpcTemplates);
 });
 
 const npc_template_get = asyncHandler(async (req, res) => {
-  // fetch and return data by param id
-  sendResponse(res, "NYI");
+  const npcTemplate = await prisma.npcTemplate.findUnique({
+    where: { id: parseInt(req.params.id) },
+  });
+  if (npcTemplate) {
+    sendResponse(res, "NYI", npcTemplate);
+  } else {
+    sendErrorResponse(res, "Cannot find template.");
+  }
 });
 
 const npc_template_create = asyncHandler(async (req, res) => {
