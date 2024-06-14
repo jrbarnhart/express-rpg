@@ -29,7 +29,6 @@ export const CreateUserSchema = z.object({
 });
 
 export const UpdateUserSchema = z.object({
-  id: z.number().int().positive(),
   email: z
     .string()
     .trim()

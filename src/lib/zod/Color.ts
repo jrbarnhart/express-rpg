@@ -10,7 +10,6 @@ export const CreateColorSchema = z.object({
 });
 
 export const UpdateColorSchema = z.object({
-  id: z.number().int().positive(),
   name: z
     .string()
     .trim()

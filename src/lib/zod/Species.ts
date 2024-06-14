@@ -11,7 +11,6 @@ export const CreateSpeciesSchema = z.object({
 });
 
 export const UpdateSpeciesSchema = z.object({
-  id: z.number().int().positive(),
   name: z
     .string()
     .trim()
