@@ -4,6 +4,18 @@ import isAuthenticated from "../middleware/isAuthenticated";
 const speciesRouter = express.Router();
 
 speciesRouter.get(
+  "/:id",
+  isAuthenticated("ADMIN"),
+  speciesController.species_get
+);
+
+speciesRouter.put(
+  "/:id",
+  isAuthenticated("ADMIN"),
+  speciesController.species_update
+);
+
+speciesRouter.get(
   "/",
   isAuthenticated("ADMIN"),
   speciesController.species_list
