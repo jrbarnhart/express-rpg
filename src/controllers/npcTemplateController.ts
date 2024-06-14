@@ -42,9 +42,6 @@ const npc_template_create = asyncHandler(async (req, res) => {
   } catch (error) {
     handlePrismaError(error, res, "Error while creating NPC Template");
   }
-
-  // try catch prisma create
-  sendResponse(res, "NYI");
 });
 
 const npc_template_update = asyncHandler(async (req, res) => {
