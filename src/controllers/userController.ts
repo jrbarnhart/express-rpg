@@ -25,6 +25,7 @@ const users_list = asyncHandler(async (req, res) => {
       username: true,
       createdAt: true,
       updatedAt: true,
+      pets: true,
     },
   });
 
@@ -38,6 +39,7 @@ const user_get = asyncHandler(async (req, res) => {
     select: {
       id: true,
       username: true,
+      pets: true,
     },
   });
   if (!user) {
