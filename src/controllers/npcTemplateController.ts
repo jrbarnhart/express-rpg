@@ -3,7 +3,10 @@ import sendResponse from "../lib/controllerUtils/sendResponse";
 import prisma from "../lib/prisma/prisma";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
-import { CreateNpcTemplateSchema } from "../lib/zod/NpcTemplate";
+import {
+  CreateNpcTemplateSchema,
+  UpdateNpcTemplateSchema,
+} from "../lib/zod/NpcTemplate";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 
 const npc_templates_list = asyncHandler(async (req, res) => {
@@ -39,25 +42,37 @@ const npc_template_create = asyncHandler(async (req, res) => {
   try {
     const newNpcTemplate = await prisma.npcTemplate.create({
       data: {
-        name: data.name,
-        speciesId: data.speciesId,
-        colorId: data.colorId,
-        health: data.health,
-        mood: data.mood,
+        ...data,
       },
     });
 
     sendResponse(res, "NPC template created successfully.", newNpcTemplate);
   } catch (error) {
-    handlePrismaError(error, res, "Error while creating NPC Template");
+    handlePrismaError(error, res, "Error while creating NPC Template.");
   }
 });
 
 const npc_template_update = asyncHandler(async (req, res) => {
-  // check user
-  // validate data
-  // try catch prisma create
-  sendResponse(res, "NYI");
+  const data = validateRequestData(req.body.data, res, UpdateNpcTemplateSchema);
+
+  if (!data) return;
+
+  try {
+    const updatedNpcTemplate = await prisma.npcTemplate.update({
+      where: { id: parseInt(req.params.id) },
+      data: {
+        ...data,
+      },
+      include: {
+        species: { select: { name: true } },
+        color: { select: { name: true } },
+      },
+    });
+
+    sendResponse(res, "NPC Template updated successfully.", updatedNpcTemplate);
+  } catch (error) {
+    handlePrismaError(error, res, "Error while updating NPC Template.");
+  }
 });
 
 const npcTemplateController = {
