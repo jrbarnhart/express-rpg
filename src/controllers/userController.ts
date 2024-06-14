@@ -12,12 +12,13 @@ import { Request } from "express";
 import { UserRole } from "@prisma/client";
 import {
   LoginUserSchema,
-  NewUserSchema,
+  CreateUserSchema,
   UpdateUserSchema,
   UpgradeUserSchema,
 } from "../lib/zod/User";
 import sendResponse from "../lib/controllerUtils/sendResponse";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
+import validateRequestData from "../lib/zod/validateRequestData";
 
 const users_list = asyncHandler(async (req, res) => {
   const allUsers = await prisma.user.findMany({
@@ -51,29 +52,11 @@ const user_get = asyncHandler(async (req, res) => {
 });
 
 const user_create = asyncHandler(async (req, res, next) => {
-  const newUserData = req.body.data;
-  if (!newUserData) {
-    const responseJSON: iResponseJSON = {
-      success: false,
-      message: "No new user data was found. Check request body format.",
-    };
-    res.json(responseJSON);
-    return;
-  }
-  const validatedData = NewUserSchema.safeParse(newUserData);
+  const data = validateRequestData(req.body.data, res, CreateUserSchema);
 
-  if (!validatedData.success) {
-    const responseJSON: iResponseJSON = {
-      success: false,
-      message: "New user data invalid. Failed to create user.",
-      data: { errors: validatedData.error.flatten().fieldErrors },
-    };
+  if (!data) return;
 
-    res.json(responseJSON);
-    return;
-  }
-
-  bcrypt.hash(validatedData.data.password, 10, async (err, hashedPassword) => {
+  bcrypt.hash(data.password, 10, async (err, hashedPassword) => {
     if (err) {
       next(err);
     }
@@ -81,24 +64,19 @@ const user_create = asyncHandler(async (req, res, next) => {
     try {
       const newUser = await prisma.user.create({
         data: {
-          username: validatedData.data.username,
-          email: validatedData.data.email,
+          username: data.username,
+          email: data.email,
           passwordHash: hashedPassword,
+        },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          role: true,
         },
       });
 
-      const responseJSON: iResponseJSON = {
-        success: true,
-        message: "User created.",
-        data: {
-          id: newUser.id,
-          email: newUser.email,
-          username: newUser.username,
-          role: newUser.role,
-        },
-      };
-
-      res.json(responseJSON);
+      sendResponse(res, "User created successfully.", newUser);
     } catch (error) {
       handlePrismaError(error, res, "Error while adding user to database.");
     }
