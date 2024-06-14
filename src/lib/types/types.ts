@@ -1,4 +1,4 @@
-import { Color, Species, User, UserRole } from "@prisma/client";
+import { Color, Species, User } from "@prisma/client";
 
 export interface iResponseJSON {
   success: true | false;
@@ -8,7 +8,7 @@ export interface iResponseJSON {
 
 export type ResponseData =
   | iResponseDataError
-  | iResponseDataUser
+  | UserPublic
   | iResponseDataToken
   | UserNoHash
   | UserNoHash[]
@@ -19,15 +19,13 @@ export type ResponseData =
 
 export type UserNoHash = Omit<User, "passwordHash">;
 
+export type UserPublic = Omit<
+  User,
+  "passwordHash" | "role" | "email" | "createdAt" | "updatedAt"
+>;
+
 export interface iResponseDataError {
   errors: { [key: string]: string[] | undefined };
-}
-
-export interface iResponseDataUser {
-  id: number;
-  username: string;
-  email: string;
-  role: UserRole;
 }
 
 export interface iResponseDataToken {
