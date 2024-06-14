@@ -2,6 +2,9 @@ import asyncHandler from "express-async-handler";
 import sendResponse from "../lib/controllerUtils/sendResponse";
 import prisma from "../lib/prisma/prisma";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
+import validateRequestData from "../lib/zod/validateRequestData";
+import { CreateNpcTemplateSchema } from "../lib/zod/NpcTemplate";
+import handlePrismaError from "../lib/prisma/handlePrismaError";
 
 const npc_templates_list = asyncHandler(async (req, res) => {
   const allNpcTemplates = await prisma.npcTemplate.findMany();
@@ -20,7 +23,26 @@ const npc_template_get = asyncHandler(async (req, res) => {
 });
 
 const npc_template_create = asyncHandler(async (req, res) => {
-  // validate data
+  const data = validateRequestData(req.body.data, res, CreateNpcTemplateSchema);
+
+  if (!data) return;
+
+  try {
+    const newNpcTemplate = await prisma.npcTemplate.create({
+      data: {
+        name: data.name,
+        speciesId: data.speciesId,
+        colorId: data.colorId,
+        health: data.health,
+        mood: data.mood,
+      },
+    });
+
+    sendResponse(res, "NPC template created successfully.", newNpcTemplate);
+  } catch (error) {
+    handlePrismaError(error, res, "Error while creating NPC Template");
+  }
+
   // try catch prisma create
   sendResponse(res, "NYI");
 });
