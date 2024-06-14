@@ -166,61 +166,42 @@ const user_login = asyncHandler(async (req, res) => {
 });
 
 const user_upgrade = asyncHandler(async (req, res) => {
-  const responseJSON: iResponseJSON = {
-    success: false,
-  };
-
   if (req.user?.id.toString() !== req.params.id) {
-    responseJSON.message = "Access denied. You cannot update this user.";
-    res.json(responseJSON);
+    sendErrorResponse(res, "Access denied. You cannot update this user.");
     return;
   }
 
-  if (!req.body.data) {
-    responseJSON.message = "Upgrade data required.";
-    res.json(responseJSON);
-    return;
-  }
+  const data = validateRequestData(req.body.data, res, UpgradeUserSchema);
 
-  const validatedData = UpgradeUserSchema.safeParse(req.body.data);
-  if (!validatedData.success) {
-    responseJSON.message = "Incorrect upgrade data format.";
-    res.json(responseJSON);
-    return;
-  }
+  if (!data) return;
 
-  const { accessTarget, accessSecret } = validatedData.data;
+  const { accessTarget, accessSecret } = data;
 
   if (!process.env.ADMIN_SECRET || !process.env.MEMBER_SECRET) {
-    (responseJSON.message = "There was an error. Please try again shortly."),
-      console.error(
-        "Access secrets not found. These are required and must be configured as local variables for user upgrades to work."
-      );
-    res.json(responseJSON);
+    console.error(
+      "Access secrets not found. These are required and must be configured as local variables for user upgrades to work."
+    );
+    sendErrorResponse(res, "There was an error. Please try again shortly.");
     return;
   }
 
   if (!(accessTarget in UserRole)) {
-    responseJSON.message = "Incorrect upgrade data format.";
-    res.json(responseJSON);
+    sendErrorResponse(res, "Incorrect upgrade data format.");
     return;
   }
 
   if (accessTarget === "ADMIN" && accessSecret !== process.env.ADMIN_SECRET) {
-    responseJSON.message = "Access denied. Check credentials and try again.";
-    res.json(responseJSON);
+    sendErrorResponse(res, "Access denied. Check credentials and try again.");
     return;
   }
 
   if (accessTarget === "MEMBER" && accessSecret !== process.env.MEMBER_SECRET) {
-    responseJSON.message = "Access denied. Check credentials and try again.";
-    res.json(responseJSON);
+    sendErrorResponse(res, "Access denied. Check credentials and try again.");
     return;
   }
 
   if (accessTarget === "BASE") {
-    responseJSON.message = "Cannot upgrade to base account.";
-    res.json(responseJSON);
+    sendErrorResponse(res, "Cannot upgrade to base account.");
     return;
   }
 
@@ -236,15 +217,17 @@ const user_upgrade = asyncHandler(async (req, res) => {
     },
   });
   if (!upgradedUser) {
-    responseJSON.message =
-      "There was an unknown error while upgrading the user.";
-    res.json(responseJSON);
+    sendErrorResponse(
+      res,
+      "There was an unknown error while upgrading the user."
+    );
     return;
   }
-  responseJSON.success = true;
-  responseJSON.message = `User upgraded to ${upgradedUser.role.toLowerCase()}.`;
-  responseJSON.data = upgradedUser;
-  res.json(responseJSON);
+  sendResponse(
+    res,
+    `User upgraded to ${upgradedUser.role.toLowerCase()}.`,
+    upgradedUser
+  );
   return;
 });
 
