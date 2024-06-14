@@ -1,5 +1,9 @@
 import asyncHandler from "express-async-handler";
-import { iResponseJSON, iValidatedUserData } from "../lib/types/types";
+import {
+  UserPublic,
+  iResponseJSON,
+  iValidatedUserData,
+} from "../lib/types/types";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma/prisma";
 import jwt from "jsonwebtoken";
@@ -13,6 +17,7 @@ import {
   UpgradeUserSchema,
 } from "../lib/zod/User";
 import sendResponse from "../lib/controllerUtils/sendResponse";
+import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 
 const users_list = asyncHandler(async (req, res) => {
   const allUsers = await prisma.user.findMany({
@@ -31,28 +36,17 @@ const users_list = asyncHandler(async (req, res) => {
 
 const user_get = asyncHandler(async (req, res) => {
   const userId = parseInt(req.params.id);
-  const user = await prisma.user.findUnique({
+  const user: UserPublic | null = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
-      role: true,
       username: true,
-      email: true,
-      passwordHash: false,
     },
   });
   if (!user) {
-    const responseJSON: iResponseJSON = {
-      success: false,
-      message: "Cannot get user. User may not exist.",
-    };
-    res.json(responseJSON);
+    sendErrorResponse(res, "Cannot find user.");
   } else {
-    const responseJSON: iResponseJSON = {
-      success: true,
-      data: user,
-    };
-    res.json(responseJSON);
+    sendResponse(res, "User retrieved successfully.", user);
   }
 });
 
