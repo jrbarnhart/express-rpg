@@ -3,20 +3,39 @@ import { iResponseDataError } from "../types/types";
 import sendErrorResponse from "../controllerUtils/sendErrorResponse";
 import { Response } from "express";
 
+const createErrorData = (metaData: unknown, message: string) => {
+  if (Array.isArray(metaData)) {
+    const target: string = metaData[0];
+    const errorData: iResponseDataError = {
+      errors: {},
+    };
+    errorData.errors[target] = [message.replace("{target}", target)];
+    return errorData;
+  } else if (typeof metaData === "string") {
+    const splitString = metaData.split("_");
+    const field = splitString[1];
+    const errorData: iResponseDataError = {
+      errors: {},
+    };
+    errorData.errors[field] = ["This is not a valid id."];
+    return errorData;
+  }
+  return undefined;
+};
+
 const formatPrismaError = (error: unknown) => {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    // Unique constraint error
-    if (error.code === "P2002") {
-      const meta = error.meta;
-      const targetArray = meta?.target;
-      if (Array.isArray(targetArray)) {
-        const target: string = targetArray[0];
-        const errorData: iResponseDataError = {
-          errors: {},
-        };
-        errorData.errors[target] = [`That ${target} is already in use.`];
-        return errorData;
-      }
+    switch (error.code) {
+      case "P2002":
+        return createErrorData(
+          error.meta?.target,
+          "That {target} is already in use."
+        );
+      case "P2003":
+        return createErrorData(
+          error.meta?.field_name,
+          "The provided key for {target} is invalid."
+        );
     }
   }
   return undefined;
