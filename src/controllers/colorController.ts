@@ -36,7 +36,7 @@ const color_update = asyncHandler(async (req, res) => {
 
   try {
     const updatedColor = await prisma.color.update({
-      where: { id: data.id },
+      where: { id: parseInt(req.params.id) },
       data: { name: data.name },
     });
 
