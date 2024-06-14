@@ -8,7 +8,6 @@ export interface iResponseJSON {
 
 export type ResponseData =
   | iResponseDataError
-  | UserPublic
   | iResponseDataToken
   | UserNoHash
   | UserNoHash[]
@@ -18,11 +17,6 @@ export type ResponseData =
   | Species[];
 
 export type UserNoHash = Omit<User, "passwordHash">;
-
-export type UserPublic = Omit<
-  User,
-  "passwordHash" | "role" | "email" | "createdAt" | "updatedAt"
->;
 
 export interface iResponseDataError {
   errors: { [key: string]: string[] | undefined };
