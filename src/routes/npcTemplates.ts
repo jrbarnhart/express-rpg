@@ -26,3 +26,5 @@ npcTemplateRouter.post(
   isAuthenticated("ADMIN"),
   npcTemplateController.npc_template_create
 );
+
+export default npcTemplateRouter;
