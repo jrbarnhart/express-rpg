@@ -2,6 +2,9 @@ import asyncHandler from "express-async-handler";
 import prisma from "../lib/prisma/prisma";
 import sendResponse from "../lib/controllerUtils/sendResponse";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
+import validateRequestData from "../lib/zod/validateRequestData";
+import { CreatePetSchema } from "../lib/zod/Pet";
+import handlePrismaError from "../lib/prisma/handlePrismaError";
 
 const pets_list = asyncHandler(async (req, res) => {
   const somePets = await prisma.pet.findMany({
@@ -32,15 +35,30 @@ const pet_get = asyncHandler(async (req, res) => {
 });
 
 const pet_create = asyncHandler(async (req, res) => {
-  res.json({
-    pet: {
-      id: 1,
-      name: "coolpet",
-      age: "0 hours",
-      health: 100,
-      mood: 100,
-    },
+  const data = validateRequestData(req.body.data, res, CreatePetSchema);
+
+  if (!data) return;
+
+  const petSpecies = await prisma.species.findUnique({
+    where: { id: data.speciesId },
   });
+
+  if (!petSpecies) {
+    sendErrorResponse(res, "New pet's species was not found.");
+    return;
+  }
+
+  const { baseHealth, baseMood } = petSpecies;
+
+  const newPetData = { ...data, health: baseHealth, mood: baseMood };
+
+  try {
+    const newPet = await prisma.pet.create({ data: newPetData });
+
+    sendResponse(res, "Pet created successfully.", newPet);
+  } catch (error) {
+    handlePrismaError(error, res, "Error while creating pet.");
+  }
 });
 
 const pet_update = asyncHandler(async (req, res) => {
