@@ -3,6 +3,8 @@ import colorController from "../controllers/colorController";
 import isAuthenticated from "../middleware/isAuthenticated";
 const colorsRouter = express.Router();
 
+colorsRouter.get("/:id", isAuthenticated("ADMIN"), colorController.color_get);
+
 colorsRouter.put(
   "/:id",
   isAuthenticated("ADMIN"),
