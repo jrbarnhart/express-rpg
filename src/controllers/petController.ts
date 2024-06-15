@@ -79,11 +79,11 @@ const pet_update = asyncHandler(async (req, res) => {
 });
 
 const pet_feed = asyncHandler(async (req, res) => {
-  res.json({ success: true, petId: req.params.id, petHealth: 100 });
+  sendResponse(res, "NYI");
 });
 
 const pet_interact = asyncHandler(async (req, res) => {
-  res.json({ success: true, petId: req.params.id, petMood: 100 });
+  sendResponse(res, "NYI");
 });
 
 const petController = {
