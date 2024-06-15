@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import prisma from "../lib/prisma/prisma";
 import sendResponse from "../lib/controllerUtils/sendResponse";
+import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 
 const pets_list = asyncHandler(async (req, res) => {
   const somePets = await prisma.pet.findMany({
@@ -15,15 +16,19 @@ const pets_list = asyncHandler(async (req, res) => {
 });
 
 const pet_get = asyncHandler(async (req, res) => {
-  res.json({
-    pet: {
-      id: req.params.id,
-      name: "specifipet",
-      age: "0 hours",
-      health: 100,
-      mood: 100,
+  const pet = await prisma.pet.findUnique({
+    where: { id: parseInt(req.params.id) },
+    include: {
+      color: { select: { name: true } },
+      species: { select: { name: true } },
     },
   });
+
+  if (!pet) {
+    sendErrorResponse(res, "Pet not found.");
+  } else {
+    sendResponse(res, "Pet retrieved successfully.", pet);
+  }
 });
 
 const pet_create = asyncHandler(async (req, res) => {
