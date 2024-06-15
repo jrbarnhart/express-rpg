@@ -41,10 +41,18 @@ const pet_create = asyncHandler(async (req, res) => {
 
   const petSpecies = await prisma.species.findUnique({
     where: { id: data.speciesId },
+    include: { colors: true },
   });
 
   if (!petSpecies) {
     sendErrorResponse(res, "New pet's species was not found.");
+    return;
+  }
+
+  const speciesColorIds = petSpecies.colors.map((entry) => entry.id);
+
+  if (!speciesColorIds.includes(data.colorId)) {
+    sendErrorResponse(res, "That color is not available for that pet species.");
     return;
   }
 
