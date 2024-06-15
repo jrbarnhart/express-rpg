@@ -1,17 +1,22 @@
 import express from "express";
 import petController from "../controllers/petController";
+import isAuthenticated from "../middleware/isAuthenticated";
 const petsRouter = express.Router();
 
-petsRouter.put("/:id/feed", petController.pet_feed);
+petsRouter.put("/:id/feed", isAuthenticated("BASE"), petController.pet_feed);
 
-petsRouter.put("/:id/interact", petController.pet_interact);
+petsRouter.put(
+  "/:id/interact",
+  isAuthenticated("BASE"),
+  petController.pet_interact
+);
 
 petsRouter.get("/:id", petController.pet_get);
 
-petsRouter.put("/:id", petController.pet_update);
+petsRouter.put("/:id", isAuthenticated("BASE"), petController.pet_update);
 
 petsRouter.get("/", petController.pets_list);
 
-petsRouter.post("/", petController.pet_create);
+petsRouter.post("/", isAuthenticated("BASE"), petController.pet_create);
 
 export default petsRouter;
