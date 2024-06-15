@@ -1,16 +1,10 @@
 import { z } from "zod";
-
-const nameSchema = z
-  .string()
-  .trim()
-  .toLowerCase()
-  .min(1, { message: "Name must be at least one character" })
-  .max(64, { message: "Name must be at most 64 characters" });
+import { name64Schema } from "./Global";
 
 export const CreateColorSchema = z.object({
-  name: nameSchema,
+  name: name64Schema,
 });
 
 export const UpdateColorSchema = z.object({
-  name: nameSchema.optional(),
+  name: name64Schema.optional(),
 });

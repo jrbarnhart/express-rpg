@@ -1,19 +1,12 @@
 import { z } from "zod";
-import { idArraySchema } from "./Global";
-
-const nameSchema = z
-  .string()
-  .trim()
-  .toLowerCase()
-  .min(1, { message: "Name must be at least one character" })
-  .max(32, { message: "Name must be at most 32 characters" });
+import { idArraySchema, name32Schema } from "./Global";
 
 export const CreateSpeciesSchema = z.object({
-  name: nameSchema,
+  name: name32Schema,
   colorIds: idArraySchema,
 });
 
 export const UpdateSpeciesSchema = z.object({
-  name: nameSchema.optional(),
+  name: name32Schema.optional(),
   colorIds: idArraySchema.optional(),
 });
