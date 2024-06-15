@@ -1,9 +1,17 @@
 import asyncHandler from "express-async-handler";
 import prisma from "../lib/prisma/prisma";
+import sendResponse from "../lib/controllerUtils/sendResponse";
 
 const pets_list = asyncHandler(async (req, res) => {
-  const petCount = await prisma.pet.count();
-  res.json({ petCount, userPets: 0 });
+  const somePets = await prisma.pet.findMany({
+    take: 10,
+    include: {
+      color: { select: { name: true } },
+      species: { select: { name: true } },
+    },
+  });
+
+  sendResponse(res, "First ten pets retrieved scuccessfully.", somePets);
 });
 
 const pet_get = asyncHandler(async (req, res) => {
