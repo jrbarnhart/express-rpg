@@ -36,6 +36,8 @@ const species_create = asyncHandler(async (req, res) => {
       data: {
         name: data.name,
         colors: { connect: data.colorIds.map((id) => ({ id })) },
+        baseHealth: data.baseHealth,
+        baseMood: data.baseMood,
       },
     });
 
