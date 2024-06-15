@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { idSchema } from "./Global";
 
 const nameSchema = z
   .string()
@@ -6,11 +7,6 @@ const nameSchema = z
   .toLowerCase()
   .min(1, { message: "Name is required" })
   .max(64, { message: "Name must be at most 64 characters long" });
-
-const idSchema = z
-  .number()
-  .int({ message: "Species ID must be an integer" })
-  .positive({ message: "Species ID must be positive." });
 
 const attributeSchema = z
   .number()
