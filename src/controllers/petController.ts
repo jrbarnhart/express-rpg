@@ -3,7 +3,7 @@ import prisma from "../lib/prisma/prisma";
 import sendResponse from "../lib/controllerUtils/sendResponse";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
-import { CreatePetSchema } from "../lib/zod/Pet";
+import { CreatePetSchema, UpdatePetSchema } from "../lib/zod/Pet";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 
 const pets_list = asyncHandler(async (req, res) => {
@@ -62,15 +62,20 @@ const pet_create = asyncHandler(async (req, res) => {
 });
 
 const pet_update = asyncHandler(async (req, res) => {
-  res.json({
-    pet: {
-      id: req.params.id,
-      name: "updatedpet",
-      age: "0 hours",
-      health: 100,
-      mood: 100,
-    },
-  });
+  const data = validateRequestData(req.body.data, res, UpdatePetSchema);
+
+  if (!data) return;
+
+  try {
+    const updatedPet = await prisma.pet.update({
+      where: { id: parseInt(req.params.id) },
+      data,
+    });
+
+    sendResponse(res, "Pet updated successfully.", updatedPet);
+  } catch (error) {
+    handlePrismaError(error, res, "Error while updating pet.");
+  }
 });
 
 const pet_feed = asyncHandler(async (req, res) => {
