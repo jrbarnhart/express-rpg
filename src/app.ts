@@ -7,7 +7,7 @@ import speciesRouter from "./routes/species";
 import npcTemplateRouter from "./routes/npcTemplates";
 import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
-import verifyTokenSecret from "./middleware/verifyTokenSecret";
+import verifyTokenSecret from "./middleware/auth/verifyTokenSecret";
 
 import "./config/passport";
 dotenv.config();

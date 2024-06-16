@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import passport, { AuthenticateCallback } from "passport";
-import { iResponseJSON } from "../lib/types/types";
+import { iResponseJSON } from "../../lib/types/types";
 
 const isAuthenticated = (
   accessLevel: "ADMIN" | "MEMBER" | "BASE" = "MEMBER"

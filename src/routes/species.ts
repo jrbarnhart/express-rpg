@@ -1,6 +1,6 @@
 import express from "express";
 import speciesController from "../controllers/speciesController";
-import isAuthenticated from "../middleware/isAuthenticated";
+import isAuthenticated from "../middleware/auth/isAuthenticated";
 const speciesRouter = express.Router();
 
 speciesRouter.get(

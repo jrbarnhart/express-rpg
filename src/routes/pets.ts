@@ -1,6 +1,6 @@
 import express from "express";
 import petController from "../controllers/petController";
-import isAuthenticated from "../middleware/isAuthenticated";
+import isAuthenticated from "../middleware/auth/isAuthenticated";
 const petsRouter = express.Router();
 
 petsRouter.put("/:id/feed", isAuthenticated("BASE"), petController.pet_feed);

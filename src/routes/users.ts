@@ -1,7 +1,7 @@
 import express from "express";
 const usersRouter = express.Router();
 import userController from "../controllers/userController";
-import isAuthenticated from "../middleware/isAuthenticated";
+import isAuthenticated from "../middleware/auth/isAuthenticated";
 
 usersRouter.post("/login", userController.user_login);
 

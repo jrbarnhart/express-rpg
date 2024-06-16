@@ -1,6 +1,6 @@
 import express from "express";
 import npcTemplateController from "../controllers/npcTemplateController";
-import isAuthenticated from "../middleware/isAuthenticated";
+import isAuthenticated from "../middleware/auth/isAuthenticated";
 const npcTemplateRouter = express.Router();
 
 npcTemplateRouter.get(
