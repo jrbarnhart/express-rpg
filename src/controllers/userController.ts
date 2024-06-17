@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { UserPublic, iValidatedUserData } from "../lib/types/types";
 import bcrypt from "bcryptjs";
-import prisma from "../lib/prisma/prisma";
 import jwt from "jsonwebtoken";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 import { Request } from "express";
@@ -165,30 +164,19 @@ const user_upgrade = asyncHandler(async (req, res) => {
     return;
   }
 
-  const upgradedUser = await prisma.user.update({
-    where: { id: parseInt(req.params.id) },
-    data: { role: accessTarget as UserRole },
-    select: {
-      id: true,
-      role: true,
-      username: true,
-      email: true,
-      passwordHash: false,
-    },
-  });
+  const id = parseInt(req.params.id);
+  const upgradedUser = await userQuery.upgrade(id, data);
+
   if (!upgradedUser) {
-    sendErrorResponse(
-      res,
-      "There was an unknown error while upgrading the user."
-    );
+    sendErrorResponse(res, "Error while upgrading the user.");
     return;
+  } else {
+    sendResponse(
+      res,
+      `User upgraded to ${upgradedUser.role.toLowerCase()}.`,
+      upgradedUser
+    );
   }
-  sendResponse(
-    res,
-    `User upgraded to ${upgradedUser.role.toLowerCase()}.`,
-    upgradedUser
-  );
-  return;
 });
 
 const userController = {
