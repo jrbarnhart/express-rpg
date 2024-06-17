@@ -38,6 +38,6 @@ const update = (id: number, data: z.infer<typeof UpdateNpcInstanceSchema>) => {
   });
 };
 
-const npcInstanceQueries = { list, findById, create, update };
+const npcInstanceQuery = { list, findById, create, update };
 
-export default npcInstanceQueries;
+export default npcInstanceQuery;

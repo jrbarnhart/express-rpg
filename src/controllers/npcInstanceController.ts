@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 import sendResponse from "../lib/controllerUtils/sendResponse";
-import npcInstanceQueries from "../lib/prisma/queries/npcInstanceQueries";
+import npcInstanceQuery from "../lib/prisma/queries/npcInstanceQuery";
 import validateRequestData from "../lib/zod/validateRequestData";
 import {
   CreateNpcInstanceSchema,
@@ -10,14 +10,14 @@ import {
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 
 const npc_instances_list = asyncHandler(async (req, res) => {
-  const allNpcInstances = await npcInstanceQueries.list();
+  const allNpcInstances = await npcInstanceQuery.list();
 
   sendResponse(res, "All NPC instances retrieved.", allNpcInstances);
 });
 
 const npc_instance_get = asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id);
-  const foundInstance = await npcInstanceQueries.findById(id);
+  const foundInstance = await npcInstanceQuery.findById(id);
 
   if (!foundInstance) {
     sendErrorResponse(res, "NPC instance not found.");
@@ -32,7 +32,7 @@ const npc_instance_create = asyncHandler(async (req, res) => {
   if (!data) return;
 
   try {
-    const newNpcInstance = await npcInstanceQueries.create(data);
+    const newNpcInstance = await npcInstanceQuery.create(data);
     sendResponse(res, "New Npc instance created.", newNpcInstance);
   } catch (error) {
     handlePrismaError(error, res, "Error while creating NPC instance.");
@@ -47,7 +47,7 @@ const npc_instance_update = asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
-    const updatedNpcInstance = await npcInstanceQueries.update(id, data);
+    const updatedNpcInstance = await npcInstanceQuery.update(id, data);
     sendResponse(res, "NPC instance updated successfully.", updatedNpcInstance);
   } catch (error) {
     handlePrismaError(error, res, "Error while updating NPC instance.");
