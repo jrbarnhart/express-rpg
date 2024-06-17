@@ -10,7 +10,14 @@ const npc_instances_list = asyncHandler(async (req, res) => {
 });
 
 const npc_instance_get = asyncHandler(async (req, res) => {
-  sendErrorResponse(res, "NYI");
+  const id = parseInt(req.params.id);
+  const foundInstance = await npcInstanceQueries.findById(id);
+
+  if (!foundInstance) {
+    sendErrorResponse(res, "Npc instance not found.");
+  } else {
+    sendResponse(res, "Npc instance retrieved successfully.", foundInstance);
+  }
 });
 
 const npc_instance_create = asyncHandler(async (req, res) => {
