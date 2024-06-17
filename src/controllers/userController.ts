@@ -15,19 +15,10 @@ import {
 import sendResponse from "../lib/controllerUtils/sendResponse";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
+import userQuery from "../lib/prisma/queries/userQuery";
 
 const users_list = asyncHandler(async (req, res) => {
-  const allUsers = await prisma.user.findMany({
-    select: {
-      id: true,
-      role: true,
-      email: true,
-      username: true,
-      createdAt: true,
-      updatedAt: true,
-      pets: true,
-    },
-  });
+  const allUsers = await userQuery.list();
 
   sendResponse(res, "User list retrieved successfully.", allUsers);
 });
