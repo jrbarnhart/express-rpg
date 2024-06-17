@@ -1,8 +1,10 @@
 import express from "express";
 import npcTemplateController from "../controllers/npcTemplateController";
 import isAuthenticated from "../middleware/auth/isAuthenticated";
+import npcInstanceController from "../controllers/npcInstanceController";
 const npcRouter = express.Router();
 
+// Templates
 npcRouter.get(
   "/templates/:id",
   isAuthenticated("ADMIN"),
@@ -25,6 +27,23 @@ npcRouter.post(
   "/templates",
   isAuthenticated("ADMIN"),
   npcTemplateController.npc_template_create
+);
+
+// Instances
+npcRouter.get("/instances/:id", npcInstanceController.npc_instance_get);
+
+npcRouter.put(
+  "/instances/:id",
+  isAuthenticated("ADMIN"),
+  npcInstanceController.npc_instance_update
+);
+
+npcRouter.get("/instances", npcInstanceController.npc_instances_list);
+
+npcRouter.post(
+  "/instances",
+  isAuthenticated("ADMIN"),
+  npcInstanceController.npc_instance_create
 );
 
 export default npcRouter;
