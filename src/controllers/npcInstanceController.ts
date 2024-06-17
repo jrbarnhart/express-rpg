@@ -1,8 +1,12 @@
 import asyncHandler from "express-async-handler";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
+import sendResponse from "../lib/controllerUtils/sendResponse";
+import prisma from "../lib/prisma/prisma";
 
 const npc_instances_list = asyncHandler(async (req, res) => {
-  sendErrorResponse(res, "NYI");
+  const allNpcInstances = await prisma.npcInstance.findMany();
+
+  sendResponse(res, "All npc instances retrieved.", allNpcInstances);
 });
 
 const npc_instance_get = asyncHandler(async (req, res) => {
