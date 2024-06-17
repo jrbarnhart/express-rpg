@@ -1,6 +1,9 @@
 import prisma from "../prisma";
 import { z } from "zod";
-import { CreateNpcInstanceSchema } from "../../zod/NpcInstance";
+import {
+  CreateNpcInstanceSchema,
+  UpdateNpcInstanceSchema,
+} from "../../zod/NpcInstance";
 
 const list = () => {
   return prisma.npcInstance.findMany();
@@ -11,17 +14,26 @@ const findById = (id: number) => {
 };
 
 const create = (data: z.infer<typeof CreateNpcInstanceSchema>) => {
+  const { battleId, templateId, ...otherData } = data;
+
   return prisma.npcInstance.create({
     data: {
-      name: data.name,
-      template: { connect: { id: data.templateId } },
-      health: data.health,
-      mood: data.mood,
-      ...(data.battleId ? { battle: { connect: { id: data.battleId } } } : {}),
+      template: { connect: { id: templateId } },
+      ...(data.battleId ? { battle: { connect: { id: battleId } } } : {}),
+      ...otherData,
     },
   });
 };
 
-const npcInstanceQueries = { list, findById, create };
+const update = (id: number, data: z.infer<typeof UpdateNpcInstanceSchema>) => {
+  return prisma.npcInstance.update({
+    where: { id },
+    data: {
+      name: data.name,
+    },
+  });
+};
+
+const npcInstanceQueries = { list, findById, create, update };
 
 export default npcInstanceQueries;
