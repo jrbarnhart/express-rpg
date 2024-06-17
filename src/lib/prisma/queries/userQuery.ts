@@ -23,6 +23,10 @@ const findById = (id: number) => {
   });
 };
 
+const findByUsername = (username: string) => {
+  return prisma.user.findUnique({ where: { username } });
+};
+
 const create = (
   data: z.infer<typeof CreateUserSchema>,
   hashedPassword: string
@@ -54,6 +58,6 @@ const update = (id: number, data: z.infer<typeof UpdateUserSchema>) => {
   });
 };
 
-const userQuery = { list, findById, create, update };
+const userQuery = { list, findById, findByUsername, create, update };
 
 export default userQuery;
