@@ -58,7 +58,12 @@ const pet_create = asyncHandler(async (req, res) => {
 
   const { baseHealth, baseMood } = petSpecies;
 
-  const newPetData = { ...data, health: baseHealth, mood: baseMood };
+  const newPetData = {
+    ...data,
+    health: baseHealth,
+    mood: baseMood,
+    ownerId: req.user?.id || 0,
+  };
 
   try {
     const newPet = await prisma.pet.create({ data: newPetData });
