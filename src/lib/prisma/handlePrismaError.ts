@@ -3,39 +3,54 @@ import { iResponseDataError } from "../types/types";
 import sendErrorResponse from "../controllerUtils/sendErrorResponse";
 import { Response } from "express";
 
+interface iErrorMetadata {
+  target?: string[] | string;
+  field_name?: string;
+  cause?: string;
+}
+
 // Prisma Error Codes: https://www.prisma.io/docs/orm/reference/error-reference#error-codes
-type ErrorCode = "P2002" | "P2003" | "P2025";
+enum ErrorCode {
+  UniqueConstraint = "P2002",
+  InvalidForeignKey = "P2003",
+  NotFound = "P2025",
+}
+
+const ERROR_MESSAGES = {
+  [ErrorCode.UniqueConstraint]: "That {target} is already in use.",
+  [ErrorCode.InvalidForeignKey]: "This is not a valid id.",
+  [ErrorCode.NotFound]:
+    "Record(s) not found. Please check your request and try again.",
+};
 
 const createErrorData = (
   code: ErrorCode,
-  metaDataField: unknown,
-  message: string
-) => {
+  metaData: iErrorMetadata
+): iResponseDataError | undefined => {
   const errorData: iResponseDataError = {
     errors: {},
   };
 
   switch (code) {
-    case "P2002":
-      if (Array.isArray(metaDataField)) {
-        const target: string = metaDataField[0];
-        errorData.errors[target] = [message.replace("{target}", target)];
-        return errorData;
-      }
-      break;
-    case "P2003":
-      if (typeof metaDataField === "string") {
-        const splitString = metaDataField.split("_");
-        const field = splitString[1];
-        errorData.errors[field] = ["This is not a valid id."];
-        return errorData;
-      }
-      break;
-    case "P2025":
-      if (typeof metaDataField === "string") {
-        errorData.errors["database"] = [
-          "Record(s) not found. Please check your request and try again.",
+    case ErrorCode.UniqueConstraint:
+      if (Array.isArray(metaData.target)) {
+        const target: string = metaData.target[0];
+        errorData.errors[target] = [
+          ERROR_MESSAGES[code].replace("{target}", target),
         ];
+        return errorData;
+      }
+      break;
+    case ErrorCode.InvalidForeignKey:
+      if (typeof metaData.field_name === "string") {
+        const field = metaData.field_name.split("_")[1];
+        errorData.errors[field] = [ERROR_MESSAGES[code]];
+        return errorData;
+      }
+      break;
+    case ErrorCode.NotFound:
+      if (metaData.cause) {
+        errorData.errors["database"] = [ERROR_MESSAGES[code]];
         return errorData;
       }
       break;
@@ -46,22 +61,10 @@ const createErrorData = (
 
 const formatPrismaError = (error: unknown) => {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    switch (error.code) {
-      case "P2002":
-        return createErrorData(
-          "P2002",
-          error.meta?.target,
-          "That {target} is already in use."
-        );
-      case "P2003":
-        return createErrorData(
-          "P2003",
-          error.meta?.field_name,
-          "The provided key for {target} is invalid."
-        );
-      case "P2025":
-        return createErrorData("P2025", error.meta?.cause, "");
-    }
+    return createErrorData(
+      error.code as ErrorCode,
+      error.meta as iErrorMetadata
+    );
   }
   return undefined;
 };
