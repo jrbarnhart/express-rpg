@@ -14,6 +14,13 @@ const list = () => {
   });
 };
 
-const userQuery = { list };
+const findById = (id: number) => {
+  return prisma.user.findUnique({
+    where: { id },
+    select: { id: true, username: true, pets: true },
+  });
+};
+
+const userQuery = { list, findById };
 
 export default userQuery;

@@ -24,15 +24,8 @@ const users_list = asyncHandler(async (req, res) => {
 });
 
 const user_get = asyncHandler(async (req, res) => {
-  const userId = parseInt(req.params.id);
-  const user: UserPublic | null = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      username: true,
-      pets: true,
-    },
-  });
+  const id = parseInt(req.params.id);
+  const user: UserPublic | null = await userQuery.findById(id);
   if (!user) {
     sendErrorResponse(res, "Cannot find user.");
   } else {
