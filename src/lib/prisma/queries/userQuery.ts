@@ -1,6 +1,11 @@
 import { z } from "zod";
 import prisma from "../prisma";
-import { CreateUserSchema, UpdateUserSchema } from "../../zod/User";
+import {
+  CreateUserSchema,
+  UpdateUserSchema,
+  UpgradeUserSchema,
+} from "../../zod/User";
+import { UserRole } from "@prisma/client";
 
 const list = () => {
   return prisma.user.findMany({
@@ -58,6 +63,19 @@ const update = (id: number, data: z.infer<typeof UpdateUserSchema>) => {
   });
 };
 
-const userQuery = { list, findById, findByUsername, create, update };
+const upgrade = (id: number, data: z.infer<typeof UpgradeUserSchema>) => {
+  return prisma.user.update({
+    where: { id },
+    data: { role: data.accessTarget as UserRole },
+    select: {
+      id: true,
+      role: true,
+      username: true,
+      email: true,
+    },
+  });
+};
+
+const userQuery = { list, findById, findByUsername, create, update, upgrade };
 
 export default userQuery;
