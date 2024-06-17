@@ -4,7 +4,7 @@ import usersRouter from "./routes/users";
 import petsRouter from "./routes/pets";
 import colorsRouter from "./routes/colors";
 import speciesRouter from "./routes/species";
-import npcTemplateRouter from "./routes/npcTemplates";
+import npcTemplateRouter from "./routes/npcs";
 import errorHandler from "./middleware/errorHandler";
 import logger from "morgan";
 import verifyTokenSecret from "./middleware/auth/verifyTokenSecret";
