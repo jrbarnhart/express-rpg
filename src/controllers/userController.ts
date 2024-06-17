@@ -58,16 +58,8 @@ const user_update = asyncHandler(async (req, res, next) => {
     validatedUserData: iValidatedUserData
   ) => {
     try {
-      const updatedUser = await prisma.user.update({
-        where: { id: parseInt(req.params.id) },
-        data: { ...validatedUserData },
-        select: {
-          id: true,
-          email: true,
-          username: true,
-        },
-      });
-
+      const id = parseInt(req.params.id);
+      const updatedUser = await userQuery.update(id, validatedUserData);
       sendResponse(res, "User updated successfully.", updatedUser);
     } catch (error) {
       handlePrismaError(error, res, "Error while updating user.");
