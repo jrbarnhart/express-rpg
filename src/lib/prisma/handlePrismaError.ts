@@ -34,7 +34,7 @@ const createErrorData = (
     case "P2025":
       if (typeof metaDataField === "string") {
         errorData.errors["database"] = [
-          "Expected connected records but did not find them.",
+          "Record(s) not found. Please check your request and try again.",
         ];
         return errorData;
       }
