@@ -4,6 +4,6 @@ const list = async () => {
   return await prisma.npcInstance.findMany();
 };
 
-const npcInstancesQueries = { list };
+const npcInstanceQueries = { list };
 
-export default npcInstancesQueries;
+export default npcInstanceQueries;
