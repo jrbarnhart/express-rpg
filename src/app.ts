@@ -29,7 +29,7 @@ app.use("/users", usersRouter);
 app.use("/pets", petsRouter);
 app.use("/colors", colorsRouter);
 app.use("/species", speciesRouter);
-app.use("/templates", npcRouter);
+app.use("/npcs", npcRouter);
 
 // 404
 app.use((req, res) => {
