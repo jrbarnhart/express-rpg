@@ -3,23 +3,44 @@ import { iResponseDataError } from "../types/types";
 import sendErrorResponse from "../controllerUtils/sendErrorResponse";
 import { Response } from "express";
 
-const createErrorData = (metaData: unknown, message: string) => {
-  if (Array.isArray(metaData)) {
-    const target: string = metaData[0];
-    const errorData: iResponseDataError = {
-      errors: {},
-    };
-    errorData.errors[target] = [message.replace("{target}", target)];
-    return errorData;
-  } else if (typeof metaData === "string") {
-    const splitString = metaData.split("_");
-    const field = splitString[1];
-    const errorData: iResponseDataError = {
-      errors: {},
-    };
-    errorData.errors[field] = ["This is not a valid id."];
-    return errorData;
+// Prisma Error Codes: https://www.prisma.io/docs/orm/reference/error-reference#error-codes
+type ErrorCode = "P2002" | "P2003" | "P2025";
+
+const createErrorData = (
+  code: ErrorCode,
+  metaDataField: unknown,
+  message: string
+) => {
+  const errorData: iResponseDataError = {
+    errors: {},
+  };
+
+  switch (code) {
+    case "P2002":
+      if (Array.isArray(metaDataField)) {
+        const target: string = metaDataField[0];
+        errorData.errors[target] = [message.replace("{target}", target)];
+        return errorData;
+      }
+      break;
+    case "P2003":
+      if (typeof metaDataField === "string") {
+        const splitString = metaDataField.split("_");
+        const field = splitString[1];
+        errorData.errors[field] = ["This is not a valid id."];
+        return errorData;
+      }
+      break;
+    case "P2025":
+      if (typeof metaDataField === "string") {
+        errorData.errors["database"] = [
+          "Expected connected records but did not find them.",
+        ];
+        return errorData;
+      }
+      break;
   }
+
   return undefined;
 };
 
@@ -28,14 +49,18 @@ const formatPrismaError = (error: unknown) => {
     switch (error.code) {
       case "P2002":
         return createErrorData(
+          "P2002",
           error.meta?.target,
           "That {target} is already in use."
         );
       case "P2003":
         return createErrorData(
+          "P2003",
           error.meta?.field_name,
           "The provided key for {target} is invalid."
         );
+      case "P2025":
+        return createErrorData("P2025", error.meta?.cause, "");
     }
   }
   return undefined;
