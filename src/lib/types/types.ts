@@ -1,4 +1,4 @@
-import { Color, NpcInstance, Species, User } from "@prisma/client";
+import { Color, NpcInstance, NpcTemplate, Species, User } from "@prisma/client";
 
 export interface iResponseJSON {
   success: true | false;
@@ -16,6 +16,8 @@ export type ResponseData =
   | Color[]
   | Species
   | Species[]
+  | NpcTemplate
+  | NpcTemplate[]
   | NpcInstance
   | NpcInstance[];
 
