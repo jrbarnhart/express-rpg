@@ -1,6 +1,6 @@
 import { z } from "zod";
 import prisma from "../prisma";
-import { CreateUserSchema } from "../../zod/User";
+import { CreateUserSchema, UpdateUserSchema } from "../../zod/User";
 
 const list = () => {
   return prisma.user.findMany({
@@ -42,6 +42,18 @@ const create = (
   });
 };
 
-const userQuery = { list, findById, create };
+const update = (id: number, data: z.infer<typeof UpdateUserSchema>) => {
+  return prisma.user.update({
+    where: { id },
+    data,
+    select: {
+      id: true,
+      email: true,
+      username: true,
+    },
+  });
+};
+
+const userQuery = { list, findById, create, update };
 
 export default userQuery;
