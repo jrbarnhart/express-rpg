@@ -44,20 +44,7 @@ const user_create = asyncHandler(async (req, res, next) => {
     }
 
     try {
-      const newUser = await prisma.user.create({
-        data: {
-          username: data.username,
-          email: data.email,
-          passwordHash: hashedPassword,
-        },
-        select: {
-          id: true,
-          email: true,
-          username: true,
-          role: true,
-        },
-      });
-
+      const newUser = await userQuery.create(data, hashedPassword);
       sendResponse(res, "User created successfully.", newUser);
     } catch (error) {
       handlePrismaError(error, res, "Error while adding user to database.");

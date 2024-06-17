@@ -1,4 +1,6 @@
+import { z } from "zod";
 import prisma from "../prisma";
+import { CreateUserSchema } from "../../zod/User";
 
 const list = () => {
   return prisma.user.findMany({
@@ -21,6 +23,25 @@ const findById = (id: number) => {
   });
 };
 
-const userQuery = { list, findById };
+const create = (
+  data: z.infer<typeof CreateUserSchema>,
+  hashedPassword: string
+) => {
+  return prisma.user.create({
+    data: {
+      username: data.username,
+      email: data.email,
+      passwordHash: hashedPassword,
+    },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      role: true,
+    },
+  });
+};
+
+const userQuery = { list, findById, create };
 
 export default userQuery;
