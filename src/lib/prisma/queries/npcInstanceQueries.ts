@@ -19,17 +19,21 @@ const create = (data: z.infer<typeof CreateNpcInstanceSchema>) => {
   return prisma.npcInstance.create({
     data: {
       template: { connect: { id: templateId } },
-      ...(data.battleId ? { battle: { connect: { id: battleId } } } : {}),
+      ...(battleId ? { battle: { connect: { id: battleId } } } : {}),
       ...otherData,
     },
   });
 };
 
 const update = (id: number, data: z.infer<typeof UpdateNpcInstanceSchema>) => {
+  const { battleId, templateId, ...otherData } = data;
+
   return prisma.npcInstance.update({
     where: { id },
     data: {
-      name: data.name,
+      ...(templateId ? { template: { connect: { id: templateId } } } : {}),
+      ...(battleId ? { battle: { connect: { id: battleId } } } : {}),
+      ...otherData,
     },
   });
 };
