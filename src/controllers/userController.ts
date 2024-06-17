@@ -100,9 +100,8 @@ const user_login = asyncHandler(async (req, res) => {
 
   if (!data) return;
 
-  const user = await prisma.user.findUnique({
-    where: { username: data.username },
-  });
+  const user = await userQuery.findByUsername(data.username);
+
   if (!user) {
     sendErrorResponse(res, "Login failed. Check credentials and try again.");
     return;
