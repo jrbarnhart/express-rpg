@@ -1,6 +1,5 @@
 import asyncHandler from "express-async-handler";
 import sendResponse from "../lib/controllerUtils/sendResponse";
-import prisma from "../lib/prisma/prisma";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
 import {
@@ -8,25 +7,16 @@ import {
   UpdateNpcTemplateSchema,
 } from "../lib/zod/NpcTemplate";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
+import npcTemplateQuery from "../lib/prisma/queries/npcTemplateQuery";
 
 const npc_templates_list = asyncHandler(async (req, res) => {
-  const allNpcTemplates = await prisma.npcTemplate.findMany({
-    include: {
-      species: { select: { name: true } },
-      color: { select: { name: true } },
-    },
-  });
+  const allNpcTemplates = await npcTemplateQuery.list();
   sendResponse(res, "All NPC Templates retrieved.", allNpcTemplates);
 });
 
 const npc_template_get = asyncHandler(async (req, res) => {
-  const npcTemplate = await prisma.npcTemplate.findUnique({
-    where: { id: parseInt(req.params.id) },
-    include: {
-      species: { select: { name: true } },
-      color: { select: { name: true } },
-    },
-  });
+  const id = parseInt(req.params.id);
+  const npcTemplate = await npcTemplateQuery.findById(id);
   if (npcTemplate) {
     sendResponse(res, "NPC Template retrieved.", npcTemplate);
   } else {
@@ -40,12 +30,7 @@ const npc_template_create = asyncHandler(async (req, res) => {
   if (!data) return;
 
   try {
-    const newNpcTemplate = await prisma.npcTemplate.create({
-      data: {
-        ...data,
-      },
-    });
-
+    const newNpcTemplate = await npcTemplateQuery.create(data);
     sendResponse(res, "NPC template created successfully.", newNpcTemplate);
   } catch (error) {
     handlePrismaError(error, res, "Error while creating NPC Template.");
@@ -58,17 +43,8 @@ const npc_template_update = asyncHandler(async (req, res) => {
   if (!data) return;
 
   try {
-    const updatedNpcTemplate = await prisma.npcTemplate.update({
-      where: { id: parseInt(req.params.id) },
-      data: {
-        ...data,
-      },
-      include: {
-        species: { select: { name: true } },
-        color: { select: { name: true } },
-      },
-    });
-
+    const id = parseInt(req.params.id);
+    const updatedNpcTemplate = await npcTemplateQuery.update(id, data);
     sendResponse(res, "NPC Template updated successfully.", updatedNpcTemplate);
   } catch (error) {
     handlePrismaError(error, res, "Error while updating NPC Template.");
