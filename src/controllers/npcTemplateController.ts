@@ -17,10 +17,10 @@ const npc_templates_list = asyncHandler(async (req, res) => {
 const npc_template_get = asyncHandler(async (req, res) => {
   const id = parseInt(req.params.id);
   const npcTemplate = await npcTemplateQuery.findById(id);
-  if (npcTemplate) {
-    sendResponse(res, "NPC Template retrieved.", npcTemplate);
-  } else {
+  if (!npcTemplate) {
     sendErrorResponse(res, "Cannot find template.");
+  } else {
+    sendResponse(res, "NPC Template retrieved.", npcTemplate);
   }
 });
 
