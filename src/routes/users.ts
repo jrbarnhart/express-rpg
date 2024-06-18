@@ -12,7 +12,7 @@ usersRouter.post(
 );
 
 usersRouter.get("/:id", userController.user_get);
-usersRouter.put("/:id", isAuthenticated(), userController.user_update);
+usersRouter.put("/:id", isAuthenticated("BASE"), userController.user_update);
 
 usersRouter.get("/", isAuthenticated("ADMIN"), userController.users_list);
 usersRouter.post("/", userController.user_create);
