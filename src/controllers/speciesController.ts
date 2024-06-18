@@ -5,6 +5,7 @@ import validateRequestData from "../lib/zod/validateRequestData";
 import { CreateSpeciesSchema, UpdateSpeciesSchema } from "../lib/zod/Species";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
+import speciesQuery from "../lib/prisma/queries/speciesQuery";
 
 const species_list = asyncHandler(async (req, res) => {
   const allSpecies = await prisma.species.findMany({
@@ -15,14 +16,12 @@ const species_list = asyncHandler(async (req, res) => {
 });
 
 const species_get = asyncHandler(async (req, res) => {
-  const species = await prisma.species.findUnique({
-    where: { id: parseInt(req.params.id) },
-    include: { colors: { select: { id: true, name: true } } },
-  });
-  if (!species) {
+  const id = parseInt(req.params.id);
+  const foundSpecies = await speciesQuery.findById(id);
+  if (!foundSpecies) {
     sendErrorResponse(res, "Species not found.");
   } else {
-    sendResponse(res, "Species retrieved successfully.", species);
+    sendResponse(res, "Species retrieved successfully.", foundSpecies);
   }
 });
 
