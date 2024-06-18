@@ -1,5 +1,4 @@
 import asyncHandler from "express-async-handler";
-import prisma from "../lib/prisma/prisma";
 import sendResponse from "../lib/controllerUtils/sendResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
 import { CreateSpeciesSchema, UpdateSpeciesSchema } from "../lib/zod/Species";
@@ -8,10 +7,7 @@ import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 import speciesQuery from "../lib/prisma/queries/speciesQuery";
 
 const species_list = asyncHandler(async (req, res) => {
-  const allSpecies = await prisma.species.findMany({
-    include: { colors: { select: { id: true, name: true } } },
-  });
-
+  const allSpecies = await speciesQuery.list();
   sendResponse(res, "All species retrieved.", allSpecies);
 });
 
@@ -31,15 +27,7 @@ const species_create = asyncHandler(async (req, res) => {
   if (!data) return;
 
   try {
-    const newSpecies = await prisma.species.create({
-      data: {
-        name: data.name,
-        colors: { connect: data.colorIds.map((id) => ({ id })) },
-        baseHealth: data.baseHealth,
-        baseMood: data.baseMood,
-      },
-    });
-
+    const newSpecies = await speciesQuery.create(data);
     sendResponse(res, "New species added.", newSpecies);
   } catch (error) {
     handlePrismaError(error, res, "Error while adding species to database.");
@@ -52,12 +40,8 @@ const species_update = asyncHandler(async (req, res) => {
   if (!data) return;
 
   try {
-    const updatedSpecies = await prisma.species.update({
-      where: { id: parseInt(req.params.id) },
-      data: { ...data },
-      include: { colors: { select: { id: true, name: true } } },
-    });
-
+    const id = parseInt(req.params.id);
+    const updatedSpecies = await speciesQuery.update(id, data);
     sendResponse(res, "Species updated successfully.", updatedSpecies);
   } catch (error) {
     handlePrismaError(error, res, "Error while updating species.");
