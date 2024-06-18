@@ -69,11 +69,8 @@ const pet_update = asyncHandler(async (req, res) => {
   if (!data) return;
 
   try {
-    const updatedPet = await prisma.pet.update({
-      where: { id: parseInt(req.params.id) },
-      data,
-    });
-
+    const id = parseInt(req.params.id);
+    const updatedPet = await petQuery.update(id, data);
     sendResponse(res, "Pet updated successfully.", updatedPet);
   } catch (error) {
     handlePrismaError(error, res, "Error while updating pet.");
