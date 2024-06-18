@@ -13,13 +13,8 @@ const pets_list = asyncHandler(async (req, res) => {
 });
 
 const pet_get = asyncHandler(async (req, res) => {
-  const pet = await prisma.pet.findUnique({
-    where: { id: parseInt(req.params.id) },
-    include: {
-      color: { select: { name: true } },
-      species: { select: { name: true } },
-    },
-  });
+  const id = parseInt(req.params.id);
+  const pet = await petQuery.findById(id);
 
   if (!pet) {
     sendErrorResponse(res, "Pet not found.");

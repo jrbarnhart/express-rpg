@@ -10,8 +10,19 @@ const list = () => {
   });
 };
 
+const findById = (id: number) => {
+  return prisma.pet.findUnique({
+    where: { id },
+    include: {
+      color: { select: { name: true } },
+      species: { select: { name: true } },
+    },
+  });
+};
+
 const petQuery = {
   list,
+  findById,
 };
 
 export default petQuery;
