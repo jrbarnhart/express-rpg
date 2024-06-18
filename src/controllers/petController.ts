@@ -5,16 +5,10 @@ import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
 import validateRequestData from "../lib/zod/validateRequestData";
 import { CreatePetSchema, UpdatePetSchema } from "../lib/zod/Pet";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
+import petQuery from "../lib/prisma/queries/petQuery";
 
 const pets_list = asyncHandler(async (req, res) => {
-  const somePets = await prisma.pet.findMany({
-    take: 10,
-    include: {
-      color: { select: { name: true } },
-      species: { select: { name: true } },
-    },
-  });
-
+  const somePets = await petQuery.list();
   sendResponse(res, "First ten pets retrieved scuccessfully.", somePets);
 });
 
