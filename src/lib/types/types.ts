@@ -41,3 +41,12 @@ export interface iValidatedUserData {
   username?: string | undefined;
   password?: string | undefined;
 }
+
+export interface NewPetData {
+  health: number;
+  mood: number;
+  ownerId: number;
+  speciesId: number;
+  colorId: number;
+  name: string;
+}

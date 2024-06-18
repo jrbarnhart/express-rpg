@@ -1,4 +1,5 @@
 import prisma from "../prisma";
+import { NewPetData } from "../../types/types";
 
 const list = () => {
   return prisma.pet.findMany({
@@ -20,9 +21,14 @@ const findById = (id: number) => {
   });
 };
 
+const create = (data: NewPetData) => {
+  return prisma.pet.create({ data });
+};
+
 const petQuery = {
   list,
   findById,
+  create,
 };
 
 export default petQuery;

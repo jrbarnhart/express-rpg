@@ -6,6 +6,7 @@ import validateRequestData from "../lib/zod/validateRequestData";
 import { CreatePetSchema, UpdatePetSchema } from "../lib/zod/Pet";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 import petQuery from "../lib/prisma/queries/petQuery";
+import { NewPetData } from "../lib/types/types";
 
 const pets_list = asyncHandler(async (req, res) => {
   const somePets = await petQuery.list();
@@ -47,7 +48,7 @@ const pet_create = asyncHandler(async (req, res) => {
 
   const { baseHealth, baseMood } = petSpecies;
 
-  const newPetData = {
+  const newPetData: NewPetData = {
     ...data,
     health: baseHealth,
     mood: baseMood,
@@ -55,8 +56,7 @@ const pet_create = asyncHandler(async (req, res) => {
   };
 
   try {
-    const newPet = await prisma.pet.create({ data: newPetData });
-
+    const newPet = await petQuery.create(newPetData);
     sendResponse(res, "Pet created successfully.", newPet);
   } catch (error) {
     handlePrismaError(error, res, "Error while creating pet.");
