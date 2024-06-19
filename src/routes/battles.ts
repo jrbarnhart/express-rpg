@@ -25,3 +25,5 @@ battlesRouter.post(
   isAuthenticated(),
   pveBattleController.pve_battle_create
 );
+
+export default battlesRouter;
