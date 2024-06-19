@@ -34,11 +34,22 @@ const update = (id: number, data: z.infer<typeof UpdatePetSchema>) => {
   });
 };
 
+const setActive = (petId: number, ownerId: number) => {
+  return prisma.$transaction([
+    prisma.pet.updateMany({
+      where: { ownerId, isActive: true },
+      data: { isActive: false },
+    }),
+    prisma.pet.update({ where: { id: petId }, data: { isActive: true } }),
+  ]);
+};
+
 const petQuery = {
   list,
   findById,
   create,
   update,
+  setActive,
 };
 
 export default petQuery;
