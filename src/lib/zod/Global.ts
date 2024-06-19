@@ -2,14 +2,20 @@ import { z } from "zod";
 
 export const attributeSchema = z
   .number()
-  .int({ message: "Health must be an integer" })
-  .positive({ message: "Health must be positive" })
-  .max(999, { message: "Health cannot be more than 999" });
+  .int({ message: "Attribute must be an integer" })
+  .positive({ message: "Attribute must be positive" })
+  .max(999, { message: "Attribute cannot be more than 999" });
+
+export const attributeLargeSchema = z
+  .number()
+  .int({ message: "Attribute must be an integer" })
+  .positive({ message: "Attribute must be positive" })
+  .max(9999, { message: "Attribute cannot be more than 9999" });
 
 export const idSchema = z
   .number()
-  .int({ message: "Species ID must be an integer" })
-  .positive({ message: "Species ID must be positive." });
+  .int({ message: "ID must be an integer" })
+  .positive({ message: "ID must be positive." });
 
 export const idArraySchema = z.array(idSchema).nonempty();
 
