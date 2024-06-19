@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { attributeSchema, idSchema, name64Schema } from "./Global";
+import {
+  attributeLargeSchema,
+  attributeSchema,
+  idSchema,
+  name64Schema,
+} from "./Global";
 
 export const CreateNpcTemplateSchema = z.object({
   name: name64Schema,
@@ -7,6 +12,7 @@ export const CreateNpcTemplateSchema = z.object({
   colorId: idSchema,
   health: attributeSchema,
   mood: attributeSchema,
+  battlePower: attributeLargeSchema,
 });
 
 export const UpdateNpcTemplateSchema = z.object({
@@ -15,4 +21,5 @@ export const UpdateNpcTemplateSchema = z.object({
   colorId: idSchema.optional(),
   health: attributeSchema.optional(),
   mood: attributeSchema.optional(),
+  battlePower: attributeLargeSchema.optional(),
 });
