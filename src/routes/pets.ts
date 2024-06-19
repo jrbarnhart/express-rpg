@@ -4,25 +4,16 @@ import isAuthenticated from "../middleware/auth/isAuthenticated";
 import canCreatePet from "../middleware/pet/canCreatePet";
 const petsRouter = express.Router();
 
-petsRouter.put("/:id/feed", isAuthenticated("BASE"), petController.pet_feed);
+petsRouter.put("/:id/feed", isAuthenticated(), petController.pet_feed);
 
-petsRouter.put(
-  "/:id/interact",
-  isAuthenticated("BASE"),
-  petController.pet_interact
-);
+petsRouter.put("/:id/interact", isAuthenticated(), petController.pet_interact);
 
 petsRouter.get("/:id", petController.pet_get);
 
-petsRouter.put("/:id", isAuthenticated("BASE"), petController.pet_update);
+petsRouter.put("/:id", isAuthenticated(), petController.pet_update);
 
 petsRouter.get("/", petController.pets_list);
 
-petsRouter.post(
-  "/",
-  isAuthenticated("BASE"),
-  canCreatePet,
-  petController.pet_create
-);
+petsRouter.post("/", isAuthenticated(), canCreatePet, petController.pet_create);
 
 export default petsRouter;
