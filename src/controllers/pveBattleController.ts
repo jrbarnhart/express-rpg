@@ -6,6 +6,8 @@ import selectBattleTemplates from "../lib/controllerUtils/selectBattleTemplates"
 import userQuery from "../lib/prisma/queries/userQuery";
 import { iNewBattleData } from "../lib/types/types";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
+import validateRequestData from "../lib/zod/validateRequestData";
+import { UpdatePveBattleSchema } from "../lib/zod/PveBattle";
 
 const pve_battle_list = asyncHandler(async (req, res) => {
   const allPveBattles = await pveBattleQuery.list();
@@ -68,7 +70,17 @@ const pve_battle_create = asyncHandler(async (req, res) => {
 });
 
 const pve_battle_update = asyncHandler(async (req, res) => {
-  sendResponse(res, "NYI");
+  const data = validateRequestData(req.body.data, res, UpdatePveBattleSchema);
+
+  if (!data) return;
+
+  try {
+    const id = parseInt(req.params.id);
+    const updatedBattle = await pveBattleQuery.update(id, data);
+    sendResponse(res, "PvE battle updated successfully.", updatedBattle);
+  } catch (error) {
+    handlePrismaError(error, res, "Error while updating PvE battle.");
+  }
 });
 
 const pve_battle_action = asyncHandler(async (req, res) => {
