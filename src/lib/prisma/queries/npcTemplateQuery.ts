@@ -14,10 +14,10 @@ const list = () => {
   });
 };
 
-const listCanBattle = () => {
+const listCanBattle = (maxBattlePower: number) => {
   return prisma.npcTemplate.findMany({
     where: {
-      battlePower: { gt: 0 },
+      battlePower: { gt: 0, lte: maxBattlePower },
     },
     include: {
       species: { select: { id: true, name: true } },
