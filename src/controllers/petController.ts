@@ -81,6 +81,26 @@ const pet_interact = asyncHandler(async (req, res) => {
   sendResponse(res, "NYI");
 });
 
+const pet_set_active = asyncHandler(async (req, res) => {
+  if (!req.user?.id) {
+    console.error(
+      "Authenticated user's credentials were not found in pve_battle_create. Check auth middleware in route."
+    );
+    sendErrorResponse(res, "User credentials not found.");
+    return;
+  }
+
+  const ownerId = req.user?.id;
+  const petId = parseInt(req.params.id);
+
+  try {
+    const [, activePet] = await petQuery.setActive(petId, ownerId);
+    sendResponse(res, "Pet activated.", activePet);
+  } catch (error) {
+    handlePrismaError(error, res, "Error while activating pet.");
+  }
+});
+
 const petController = {
   pets_list,
   pet_get,
@@ -88,6 +108,7 @@ const petController = {
   pet_update,
   pet_feed,
   pet_interact,
+  pet_set_active,
 };
 
 export default petController;
