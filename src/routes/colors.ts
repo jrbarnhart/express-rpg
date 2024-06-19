@@ -3,7 +3,7 @@ import colorController from "../controllers/colorController";
 import isAuthenticated from "../middleware/auth/isAuthenticated";
 const colorsRouter = express.Router();
 
-colorsRouter.get("/:id", isAuthenticated("ADMIN"), colorController.color_get);
+colorsRouter.get("/:id", colorController.color_get);
 
 colorsRouter.put(
   "/:id",
@@ -11,7 +11,7 @@ colorsRouter.put(
   colorController.color_update
 );
 
-colorsRouter.get("/", isAuthenticated("ADMIN"), colorController.colors_list);
+colorsRouter.get("/", colorController.colors_list);
 
 colorsRouter.post("/", isAuthenticated("ADMIN"), colorController.color_create);
 
