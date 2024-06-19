@@ -23,6 +23,9 @@ const listCanBattle = () => {
       species: { select: { id: true, name: true } },
       color: { select: { id: true, name: true } },
     },
+    orderBy: {
+      battlePower: "asc",
+    },
   });
 };
 
