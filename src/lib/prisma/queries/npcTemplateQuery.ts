@@ -14,6 +14,18 @@ const list = () => {
   });
 };
 
+const listCanBattle = () => {
+  return prisma.npcTemplate.findMany({
+    where: {
+      battlePower: { gt: 0 },
+    },
+    include: {
+      species: { select: { id: true, name: true } },
+      color: { select: { id: true, name: true } },
+    },
+  });
+};
+
 const findById = (id: number) => {
   return prisma.npcTemplate.findUnique({
     where: { id },
@@ -49,6 +61,7 @@ const update = (id: number, data: z.infer<typeof UpdateNpcTemplateSchema>) => {
 
 const npcTemplateQuery = {
   list,
+  listCanBattle,
   findById,
   create,
   update,
