@@ -70,17 +70,18 @@ model Color {
 }
 
 model NpcTemplate {
-  id        Int           @id @default(autoincrement())
-  name      String        @unique
-  instances NpcInstance[]
-  species   Species       @relation(fields: [speciesId], references: [id], onDelete: Restrict)
-  speciesId Int
-  color     Color         @relation(fields: [colorId], references: [id], onDelete: Restrict)
-  colorId   Int
-  health    Int
-  mood      Int
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  instances   NpcInstance[]
+  species     Species       @relation(fields: [speciesId], references: [id], onDelete: Restrict)
+  speciesId   Int
+  color       Color         @relation(fields: [colorId], references: [id], onDelete: Restrict)
+  colorId     Int
+  health      Int
+  mood        Int
+  battlePower Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model NpcInstance {
