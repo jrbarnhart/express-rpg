@@ -90,11 +90,25 @@ const pet_set_active = asyncHandler(async (req, res) => {
     return;
   }
 
-  const ownerId = req.user?.id;
+  const userId = req.user?.id;
   const petId = parseInt(req.params.id);
 
+  const pet = await petQuery.findById(petId);
+  if (!pet) {
+    sendErrorResponse(res, "Cannot activate pet. That pet was not found.");
+    return;
+  }
+
+  if (pet.ownerId !== userId) {
+    sendErrorResponse(
+      res,
+      "Cannot activate that pet. It does not belong to you."
+    );
+    return;
+  }
+
   try {
-    const [, activePet] = await petQuery.setActive(petId, ownerId);
+    const [, activePet] = await petQuery.setActive(petId, userId);
     sendResponse(res, "Pet activated.", activePet);
   } catch (error) {
     handlePrismaError(error, res, "Error while activating pet.");
