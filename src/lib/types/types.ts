@@ -59,3 +59,18 @@ export interface NewPetData {
   colorId: number;
   name: string;
 }
+
+export interface iNewBattleData {
+  opponentTemplates: {
+    id: number;
+    name: string;
+    speciesId: number;
+    colorId: number;
+    health: number;
+    mood: number;
+    battlePower: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
+  userId: number;
+}
