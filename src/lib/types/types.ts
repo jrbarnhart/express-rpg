@@ -1,4 +1,11 @@
-import { Color, NpcInstance, NpcTemplate, Species, User } from "@prisma/client";
+import {
+  Color,
+  NpcInstance,
+  NpcTemplate,
+  PveBattle,
+  Species,
+  User,
+} from "@prisma/client";
 
 export interface iResponseJSON {
   success: true | false;
@@ -19,7 +26,9 @@ export type ResponseData =
   | NpcTemplate
   | NpcTemplate[]
   | NpcInstance
-  | NpcInstance[];
+  | NpcInstance[]
+  | PveBattle
+  | PveBattle[];
 
 export type UserNoHash = Omit<User, "passwordHash">;
 
