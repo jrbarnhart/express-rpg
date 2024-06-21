@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import sendErrorResponse from "./sendErrorResponse";
 
-const userIdExists = (req: Request, res: Response) => {
+const getUserId = (req: Request, res: Response) => {
   if (!req.user?.id) {
     console.error(
       "Authenticated user's credentials were not found in pve_battle_create. Check auth middleware in route."
@@ -9,7 +9,7 @@ const userIdExists = (req: Request, res: Response) => {
     sendErrorResponse(res, "User credentials not found.");
     return false;
   }
-  return true;
+  return req.user.id;
 };
 
-export default userIdExists;
+export default getUserId;
