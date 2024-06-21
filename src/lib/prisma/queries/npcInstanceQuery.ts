@@ -21,6 +21,9 @@ const create = (data: z.infer<typeof CreateNpcInstanceSchema>) => {
       template: { connect: { id: templateId } },
       ...(battleId ? { battle: { connect: { id: battleId } } } : {}),
       ...otherData,
+      // New instances always have full current stats
+      currentHealth: otherData.health,
+      currentMood: otherData.mood,
     },
   });
 };

@@ -24,7 +24,10 @@ const findById = (id: number) => {
 };
 
 const create = (data: NewPetData) => {
-  return prisma.pet.create({ data });
+  return prisma.pet.create({
+    // New pets always have full current stats
+    data: { ...data, currentHealth: data.health, currentMood: data.mood },
+  });
 };
 
 const update = (id: number, data: z.infer<typeof UpdatePetSchema>) => {
