@@ -26,7 +26,7 @@ npcRouter.get("/instances/:id", npcInstanceController.npc_instance_get);
 
 npcRouter.put(
   "/instances/:id",
-  isAuthenticated(),
+  isAuthenticated("ADMIN"),
   npcInstanceController.npc_instance_update
 );
 
@@ -34,7 +34,7 @@ npcRouter.get("/instances", npcInstanceController.npc_instances_list);
 
 npcRouter.post(
   "/instances",
-  isAuthenticated(),
+  isAuthenticated("ADMIN"),
   npcInstanceController.npc_instance_create
 );
 
