@@ -50,11 +50,16 @@ const update = (id: number, data: z.infer<typeof UpdatePveBattleSchema>) => {
   });
 };
 
+const findUserActiveBattle = (userId: number) => {
+  return prisma.pveBattle.findFirst({ where: { userId, isActive: true } });
+};
+
 const pveBattleQuery = {
   list,
   findById,
   create,
   update,
+  findUserActiveBattle,
 };
 
 export default pveBattleQuery;
