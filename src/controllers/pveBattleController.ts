@@ -93,6 +93,25 @@ const pve_battle_action = asyncHandler(async (req, res) => {
   const userId = getUserId(req, res);
 
   if (!userId) return;
+
+  const battleId = parseInt(req.params.id);
+
+  const activeBattle = await pveBattleQuery.findById(battleId);
+
+  if (!activeBattle) {
+    sendErrorResponse(res, "That battle was not found.");
+    return;
+  }
+
+  if (activeBattle.userId !== userId) {
+    sendErrorResponse(res, "This is not your battle.");
+    return;
+  }
+
+  if (!activeBattle.isActive) {
+    sendErrorResponse(res, "That battle is not active.");
+    return;
+  }
 });
 
 const pveBattleController = {
