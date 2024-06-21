@@ -8,6 +8,7 @@ import { iNewBattleData } from "../lib/types/types";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 import validateRequestData from "../lib/zod/validateRequestData";
 import { UpdatePveBattleSchema } from "../lib/zod/PveBattle";
+import getUserId from "../lib/controllerUtils/getUserId";
 
 const pve_battle_list = asyncHandler(async (req, res) => {
   const allPveBattles = await pveBattleQuery.list();
@@ -25,16 +26,10 @@ const pve_battle_get = asyncHandler(async (req, res) => {
 });
 
 const pve_battle_create = asyncHandler(async (req, res) => {
-  if (!req.user?.id) {
-    console.error(
-      "Authenticated user's credentials were not found in pve_battle_create. Check auth middleware in route."
-    );
-    sendErrorResponse(res, "User credentials not found.");
-    return;
-  }
+  const userId = getUserId(req, res);
 
-  // Get user to check their active pet
-  const userId = req.user.id;
+  if (!userId) return;
+
   const user = await userQuery.findById(userId);
   if (!user) {
     sendErrorResponse(res, "Cannot create battle. User not found.");
@@ -95,7 +90,9 @@ const pve_battle_update = asyncHandler(async (req, res) => {
 });
 
 const pve_battle_action = asyncHandler(async (req, res) => {
-  sendResponse(res, "NYI");
+  const userId = getUserId(req, res);
+
+  if (!userId) return;
 });
 
 const pveBattleController = {
