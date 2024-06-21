@@ -33,6 +33,7 @@ const pve_battle_create = asyncHandler(async (req, res) => {
     return;
   }
 
+  // Get user to check their active pet
   const userId = req.user.id;
   const user = await userQuery.findById(userId);
   if (!user) {
@@ -45,6 +46,16 @@ const pve_battle_create = asyncHandler(async (req, res) => {
     sendErrorResponse(
       res,
       "Cannot create battle. User does not have an active pet."
+    );
+    return;
+  }
+
+  // Users with an active battle shouldn't be able to start another
+  const activeBattle = await pveBattleQuery.findUserActiveBattle(userId);
+  if (activeBattle) {
+    sendErrorResponse(
+      res,
+      "Cannot create battle. User already has an active battle."
     );
     return;
   }
