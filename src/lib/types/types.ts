@@ -74,9 +74,3 @@ export interface iNewBattleData {
   }[];
   userId: number;
 }
-
-export enum ACTION_OPTIONS {
-  "attack",
-  "defend",
-  "run",
-}
