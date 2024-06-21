@@ -32,19 +32,21 @@ enum UserRole {
 }
 
 model Pet {
-  id        Int      @id @default(autoincrement())
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Restrict)
-  ownerId   Int
-  isActive  Boolean  @default(false)
-  species   Species  @relation(fields: [speciesId], references: [id], onDelete: Restrict)
-  speciesId Int
-  color     Color    @relation(fields: [colorId], references: [id], onDelete: Restrict)
-  colorId   Int
-  name      String
-  health    Int
-  mood      Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  ownerId       Int
+  isActive      Boolean  @default(false)
+  species       Species  @relation(fields: [speciesId], references: [id], onDelete: Restrict)
+  speciesId     Int
+  color         Color    @relation(fields: [colorId], references: [id], onDelete: Restrict)
+  colorId       Int
+  name          String
+  health        Int
+  mood          Int
+  currentHealth Int      @default(0)
+  currentMood   Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Species {
@@ -85,16 +87,18 @@ model NpcTemplate {
 }
 
 model NpcInstance {
-  id         Int         @id @default(autoincrement())
-  name       String
-  template   NpcTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
-  templateId Int
-  health     Int
-  mood       Int
-  battle     PveBattle?  @relation(fields: [battleId], references: [id], onDelete: SetNull)
-  battleId   Int?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id            Int         @id @default(autoincrement())
+  name          String
+  template      NpcTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  templateId    Int
+  health        Int
+  mood          Int
+  currentHealth Int         @default(0)
+  currentMood   Int         @default(0)
+  battle        PveBattle?  @relation(fields: [battleId], references: [id], onDelete: SetNull)
+  battleId      Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model PveBattle {
