@@ -29,7 +29,8 @@ export type ResponseData =
   | NpcInstance
   | NpcInstance[]
   | PveBattle
-  | PveBattle[];
+  | PveBattle[]
+  | iPveAttackResponse;
 
 export type UserNoHash = Omit<User, "passwordHash">;
 
@@ -79,3 +80,7 @@ export interface iNewBattleData {
 export type PveBattleWithOpponents = Prisma.PveBattleGetPayload<{
   include: { opponents: true };
 }>;
+
+export interface iPveAttackResponse {
+  userPetSpeed: number;
+}
