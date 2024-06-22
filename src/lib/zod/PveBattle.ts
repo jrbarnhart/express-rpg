@@ -12,7 +12,7 @@ enum ACTION_OPTIONS {
   run = "run",
 }
 
-export const ActionSchema = z
+export const PveBattleActionSchema = z
   .object({
     action: z.nativeEnum(ACTION_OPTIONS, {
       message: "Action invalid. Valid actions:",
