@@ -84,6 +84,7 @@ export const calcAllVirtualStats = (petOrNpc: Pet | NpcInstance) => {
     accuracyBonus,
     power,
     powerBonus,
+    id: petOrNpc.id,
   };
 
   return allVirtualStats;
