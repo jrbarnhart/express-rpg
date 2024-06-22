@@ -17,8 +17,11 @@ import { Pet } from "@prisma/client";
 import sendResponse from "../sendResponse";
 import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
+import npcInstanceQuery from "../../prisma/queries/npcInstanceQuery";
+import actionHelpers from "./actionHelpers";
+import petQuery from "../../prisma/queries/petQuery";
 
-const attack = (
+const attack = async (
   res: Response,
   data: z.infer<typeof PveBattleActionSchema>,
   battle: PveBattleWithOpponents,
@@ -26,19 +29,6 @@ const attack = (
 ) => {
   if (!data.targetId) {
     sendErrorResponse(res, "No target was declared for your attack.");
-    return;
-  }
-
-  const opponentIds: number[] = [];
-  for (const opponent of battle.opponents) {
-    opponentIds.push(opponent.id);
-  }
-
-  if (!opponentIds.includes(data.targetId)) {
-    sendErrorResponse(
-      res,
-      "Cannot attack opponent that is not a part of this battle."
-    );
     return;
   }
 
@@ -50,7 +40,6 @@ const attack = (
   const opponentStats = battle.opponents.map((opponent) => {
     return calcAllVirtualStats(opponent);
   });
-
   const allStats = [...opponentStats, petStats];
 
   // Determine attack order in ids based on speed
@@ -67,10 +56,51 @@ const attack = (
       return stats.id;
     });
 
+  const target = battle.opponents.find(
+    (opponent) => opponent.id === data.targetId
+  );
+  if (!target) {
+    sendErrorResponse(
+      res,
+      "Cannot attack opponent that is not a part of this battle."
+    );
+    return;
+  }
+  const targetStats = allStats.find((stats) => stats.id === data.targetId);
+  if (!targetStats) {
+    sendErrorResponse(
+      res,
+      "Target's stats were not found. Check targetId and try again."
+    );
+    return;
+  }
+
+  // Keep track of what happens
+  const log: string[] = [];
+
   // Apply attacks. Can only attack if health and mood > 0
+  const damageMod = 0.2;
   for (const attackerId of attackOrder) {
     if (attackerId === petComparisonId) {
-      // Do pet attack
+      if (userPet.currentHealth > 0 && userPet.currentMood > 0) {
+        // calc damage to target
+        const hitChance = actionHelpers.calcHitChance(
+          petStats.accuracy,
+          targetStats.speed
+        );
+        const didHit = Math.random() <= hitChance;
+        const damage = petStats.power * damageMod;
+        const newCurrentHealth = Math.min(target.currentHealth - damage, 0);
+        // log
+        log.push(
+          `Your pet attacked ${target.name} (${hitChance * 100}%. ${
+            didHit ? `It hit and did ${damage} health damage.` : "It missed..."
+          }`
+        );
+        /* const updatedTarget = await npcInstanceQuery.update(data.targetId, {
+          currentHealth: newCurrentHealth,
+        }); */
+      }
     } else {
       // Do npc attack
     }
@@ -81,6 +111,7 @@ const attack = (
   sendResponse(res, "Attack successful!", {
     petStats,
     opponentStats,
+    log,
   });
 };
 
