@@ -15,7 +15,7 @@ type ModifyConfig = {
 
 type StatResult = {
   totalStat: number;
-  weakenedMod: number;
+  bonusMod: number;
 };
 
 type StatCalculator = (petOrNpc: Pet | NpcInstance) => StatResult;
@@ -49,14 +49,14 @@ const createStatCalculator = (
   return (petOrNpc: Pet | NpcInstance) => {
     const baseStat =
       petOrNpc.health * modify.byHealth + petOrNpc.mood * modify.byMood;
-    const weakenedMod =
+    const bonusMod =
       (petOrNpc.currentHealth / petOrNpc.health) * modify.byHealth +
       (petOrNpc.currentMood / petOrNpc.mood) * modify.byMood;
-    const currentBonus = baseStat * MODIFY.currentBonus * weakenedMod;
+    const currentBonus = baseStat * MODIFY.currentBonus * bonusMod;
     const totalStat = baseStat + currentBonus;
     return {
       totalStat,
-      weakenedMod,
+      bonusMod,
     };
   };
 };
