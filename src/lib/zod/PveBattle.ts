@@ -16,7 +16,7 @@ export enum ACTION_OPTIONS {
 export const PveBattleActionSchema = z
   .object({
     action: z.nativeEnum(ACTION_OPTIONS, {
-      message: "Action invalid. Valid actions:",
+      message: `Action invalid. Valid actions: ${ACTION_OPTIONS.attack}, ${ACTION_OPTIONS.insult}, ${ACTION_OPTIONS.defend}, ${ACTION_OPTIONS.run}`,
     }),
     targetId: idSchema.optional(),
   })
@@ -27,5 +27,8 @@ export const PveBattleActionSchema = z
       }
       return true;
     },
-    { message: "You must include a targetId with your attack action." }
+    {
+      message: "You must include a targetId with your attack action.",
+      path: ["targetId"],
+    }
   );
