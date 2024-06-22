@@ -2,6 +2,7 @@ import {
   Color,
   NpcInstance,
   NpcTemplate,
+  Prisma,
   PveBattle,
   Species,
   User,
@@ -74,3 +75,7 @@ export interface iNewBattleData {
   }[];
   userId: number;
 }
+
+export type PveBattleWithOpponents = Prisma.PveBattleGetPayload<{
+  include: { opponents: true };
+}>;
