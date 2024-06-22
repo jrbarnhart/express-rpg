@@ -8,6 +8,7 @@ export const UpdatePveBattleSchema = z.object({
 
 export enum ACTION_OPTIONS {
   attack = "attack",
+  insult = "insult",
   defend = "defend",
   run = "run",
 }
