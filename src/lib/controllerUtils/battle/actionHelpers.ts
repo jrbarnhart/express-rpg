@@ -10,4 +10,8 @@ const calcHitChance = (
   return hitChance;
 };
 
-export default calcHitChance;
+const actionHelpers = {
+  calcHitChance,
+};
+
+export default actionHelpers;
