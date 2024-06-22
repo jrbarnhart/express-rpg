@@ -81,6 +81,4 @@ export type PveBattleWithOpponents = Prisma.PveBattleGetPayload<{
   include: { opponents: true };
 }>;
 
-export interface iPveAttackResponse {
-  userPetSpeed: number;
-}
+export type iPveAttackResponse = unknown;
