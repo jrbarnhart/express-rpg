@@ -22,6 +22,8 @@ type StatCalculator = (petOrNpc: Pet | NpcInstance) => StatResult;
 
 interface CalcVirtualStats {
   speed: StatCalculator;
+  accuracy: StatCalculator;
+  power: StatCalculator;
 }
 
 const MODIFY: ModifyConfig = {
@@ -29,6 +31,14 @@ const MODIFY: ModifyConfig = {
   speed: {
     byHealth: 0.75,
     byMood: 0.25,
+  },
+  accuracy: {
+    byHealth: 0.25,
+    byMood: 0.75,
+  },
+  power: {
+    byHealth: 0.5,
+    byMood: 0.5,
   },
 };
 
