@@ -6,7 +6,7 @@ export const UpdatePveBattleSchema = z.object({
   isVictory: z.boolean().optional(),
 });
 
-enum ACTION_OPTIONS {
+export enum ACTION_OPTIONS {
   attack = "attack",
   defend = "defend",
   run = "run",
