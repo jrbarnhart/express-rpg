@@ -7,7 +7,10 @@ import userQuery from "../lib/prisma/queries/userQuery";
 import { iNewBattleData } from "../lib/types/types";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 import validateRequestData from "../lib/zod/validateRequestData";
-import { UpdatePveBattleSchema } from "../lib/zod/PveBattle";
+import {
+  PveBattleActionSchema,
+  UpdatePveBattleSchema,
+} from "../lib/zod/PveBattle";
 import getUserId from "../lib/controllerUtils/getUserId";
 
 const pve_battle_list = asyncHandler(async (req, res) => {
@@ -90,6 +93,10 @@ const pve_battle_update = asyncHandler(async (req, res) => {
 });
 
 const pve_battle_action = asyncHandler(async (req, res) => {
+  const data = validateRequestData(req.body.data, res, PveBattleActionSchema);
+
+  if (!data) return;
+
   const userId = getUserId(req, res);
 
   if (!userId) return;
@@ -112,6 +119,39 @@ const pve_battle_action = asyncHandler(async (req, res) => {
     sendErrorResponse(res, "That battle is not active.");
     return;
   }
+
+  /* 
+    Handle attack
+    1. Verify target
+    2. Calculate damage and apply to npc instances
+    3. If no foes remain (currentHealth/Mood > 0) then set battle isActive = false 
+       and isVictory = true and send victory response
+    4. For each remaining enemy 
+        a. Determine action (attack, defend)
+        b. Calculate damage
+    5. Apply damage to user pet
+    6. If pet dies (currentHealth/Mood <= 0) then set battle isActive = false
+       and send loss response
+    7. Send default battle response
+
+    Handle defend
+    1. For each remaining enemy
+      a. Determine action
+      b. Calculate damage applying defend bonus
+    2. Apply damage to pet
+    3. If pet dies then set battle stuff and send loss response
+    4. Send default battle response
+
+    Handle run
+    1. Do check to see if run successful
+    2. If yes then set battle isActive to false
+    3. If no then for each remaining enemy
+          a. Determine action
+          b. Calculate damage applying run penalty
+    4. Apply damage to pet
+    5. If pet dies set battle stuff and send loss response
+    6. Send default battle response
+  */
 });
 
 const pveBattleController = {
