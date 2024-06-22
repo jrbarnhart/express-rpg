@@ -16,7 +16,7 @@ import sendErrorResponse from "../sendErrorResponse";
 import { Pet } from "@prisma/client";
 import sendResponse from "../sendResponse";
 import { z } from "zod";
-import calcVirtualStats from "./calcVirtualStats";
+import { calcAllVirtualStats } from "./calcVirtualStats";
 
 const attack = (
   res: Response,
@@ -42,12 +42,46 @@ const attack = (
     return;
   }
 
-  const { totalStat: userPetSpeed } = calcVirtualStats.speed(userPet);
-  // Determine attack order based on speed
+  // Calc the virtual stats for all competitors
+  const petStats = calcAllVirtualStats(userPet);
+  // Set id to distinguish pet stats from npc instance stats, and so pet id never overlaps
+  const petComparisonId = -999;
+  petStats.id = petComparisonId;
+  const opponentStats = battle.opponents.map((opponent) => {
+    return calcAllVirtualStats(opponent);
+  });
+
+  const allStats = [...opponentStats, petStats];
+
+  // Determine attack order in ids based on speed
+  const attackOrder = allStats
+    .sort((a, b) => {
+      if (a.speed < b.speed) {
+        return -1;
+      } else if (a.speed > b.speed) {
+        return 1;
+      }
+      return 0;
+    })
+    .map((stats) => {
+      return stats.id;
+    });
+
   // Apply attacks. Can only attack if health and mood > 0
+  for (const attackerId of attackOrder) {
+    if (attackerId === petComparisonId) {
+      // Do pet attack
+    } else {
+      // Do npc attack
+    }
+  }
+
   // Can only attack target with health and mood > 0
   // Add attacks and results to log as they happen
-  sendResponse(res, "Attack successful!", { userPetSpeed });
+  sendResponse(res, "Attack successful!", {
+    petStats,
+    opponentStats,
+  });
 };
 
 const handlePveBattleAction = {
