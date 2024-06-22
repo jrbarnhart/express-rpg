@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { idSchema, name32Schema } from "./Global";
+import { attributeSchema, idSchema, name32Schema } from "./Global";
 
 export const CreatePetSchema = z.object({
   speciesId: idSchema,
@@ -9,4 +9,6 @@ export const CreatePetSchema = z.object({
 
 export const UpdatePetSchema = z.object({
   name: name32Schema.optional(),
+  currentHealth: attributeSchema.optional(),
+  currentMood: attributeSchema.optional(),
 });
