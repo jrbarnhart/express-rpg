@@ -69,4 +69,24 @@ const calcVirtualStats = Object.entries(MODIFY).reduce((acc, [key, value]) => {
   return acc;
 }, {} as CalcVirtualStats);
 
+export const calcAllVirtualStats = (petOrNpc: Pet | NpcInstance) => {
+  const { totalStat: speed, bonusMod: speedBonus } =
+    calcVirtualStats.speed(petOrNpc);
+  const { totalStat: accuracy, bonusMod: accuracyBonus } =
+    calcVirtualStats.accuracy(petOrNpc);
+  const { totalStat: power, bonusMod: powerBonus } =
+    calcVirtualStats.power(petOrNpc);
+
+  const allVirtualStats = {
+    speed,
+    speedBonus,
+    accuracy,
+    accuracyBonus,
+    power,
+    powerBonus,
+  };
+
+  return allVirtualStats;
+};
+
 export default calcVirtualStats;
