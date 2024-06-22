@@ -8,10 +8,12 @@ import { iNewBattleData } from "../lib/types/types";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 import validateRequestData from "../lib/zod/validateRequestData";
 import {
+  ACTION_OPTIONS,
   PveBattleActionSchema,
   UpdatePveBattleSchema,
 } from "../lib/zod/PveBattle";
 import getUserId from "../lib/controllerUtils/getUserId";
+import handlePveBattleAction from "../lib/controllerUtils/battle/handlePveBattleAction";
 
 const pve_battle_list = asyncHandler(async (req, res) => {
   const allPveBattles = await pveBattleQuery.list();
@@ -101,6 +103,21 @@ const pve_battle_action = asyncHandler(async (req, res) => {
 
   if (!userId) return;
 
+  const user = await userQuery.findById(userId);
+  if (!user) {
+    sendErrorResponse(res, "Cannot create battle. User not found.");
+    return;
+  }
+
+  const activePet = user.pets.find((pet) => pet.isActive);
+  if (!activePet) {
+    sendErrorResponse(
+      res,
+      "Cannot create battle. User does not have an active pet."
+    );
+    return;
+  }
+
   const battleId = parseInt(req.params.id);
 
   const activeBattle = await pveBattleQuery.findById(battleId);
@@ -118,6 +135,11 @@ const pve_battle_action = asyncHandler(async (req, res) => {
   if (!activeBattle.isActive) {
     sendErrorResponse(res, "That battle is not active.");
     return;
+  }
+
+  switch (data.action) {
+    case ACTION_OPTIONS.attack:
+      handlePveBattleAction.attack(res, data, activeBattle, activePet);
   }
 
   /* 
