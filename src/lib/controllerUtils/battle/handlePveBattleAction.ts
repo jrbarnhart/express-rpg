@@ -16,6 +16,7 @@ import sendErrorResponse from "../sendErrorResponse";
 import { Pet } from "@prisma/client";
 import sendResponse from "../sendResponse";
 import { z } from "zod";
+import calcVirtualStats from "./calcVirtualStats";
 
 const attack = (
   res: Response,
@@ -41,21 +42,12 @@ const attack = (
     return;
   }
 
-  // Speed is 75% currentHealth and 25% currentMood + 75% health and 25% mood
-  const petSpeed =
-    0.75 * userPet.health +
-    0.3725 * userPet.currentHealth +
-    0.25 * userPet.mood +
-    0.1225 * userPet.currentMood;
-  // Accuracy is 25/75 as above
-  // Power is 50/50 as above
+  const { totalStat: userPetSpeed } = calcVirtualStats.speed(userPet);
   // Determine attack order based on speed
   // Apply attacks. Can only attack if health and mood > 0
   // Can only attack target with health and mood > 0
   // Add attacks and results to log as they happen
-  //
-
-  sendResponse(res, "Attack successful!", petSpeed);
+  sendResponse(res, "Attack successful!", { userPetSpeed });
 };
 
 const handlePveBattleAction = {
