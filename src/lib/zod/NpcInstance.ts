@@ -13,6 +13,8 @@ export const UpdateNpcInstanceSchema = z.object({
   name: name64Schema.optional(),
   templateId: idSchema.optional(),
   health: attributeSchema.optional(),
+  currentHealth: attributeSchema.optional(),
+  currentMood: attributeSchema.optional(),
   mood: attributeSchema.optional(),
   battleId: attributeSchema.optional(),
 });
