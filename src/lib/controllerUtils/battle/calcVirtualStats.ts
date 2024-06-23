@@ -1,4 +1,5 @@
 import { NpcInstance, Pet } from "@prisma/client";
+import { iVirtualStats } from "../../types/types";
 
 // Virtual stat modifiers should add up to 1, excepting currentBonus.
 // This is so that the currentBonus will always be 0 to 25% of the base stat,
@@ -77,7 +78,7 @@ export const calcAllVirtualStats = (petOrNpc: Pet | NpcInstance) => {
   const { totalStat: power, bonusMod: powerBonus } =
     calcVirtualStats.power(petOrNpc);
 
-  const allVirtualStats = {
+  const allVirtualStats: iVirtualStats = {
     speed,
     speedBonus,
     accuracy,
