@@ -13,7 +13,7 @@ import { PveBattleActionSchema } from "../../zod/PveBattle";
 import { Response } from "express";
 import { PveBattleWithOpponents } from "../../types/types";
 import sendErrorResponse from "../sendErrorResponse";
-import { Pet } from "@prisma/client";
+import { NpcInstance, Pet } from "@prisma/client";
 import sendResponse from "../sendResponse";
 import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
@@ -31,29 +31,44 @@ const handlePveBattleAction = async (
     return;
   }
 
-  // Calc the virtual stats for all competitors
   const petStats = calcAllVirtualStats(userPet);
-  // Set id to distinguish pet stats from npc instance stats, and so pet id never overlaps
+  // Set id to distinguish pet stats from npc instance stats and never overlap
   const petComparisonId = -999;
   petStats.id = petComparisonId;
+
   const opponentStats = battle.opponents.map((opponent) => {
     return calcAllVirtualStats(opponent);
   });
+
   const allStats = [...opponentStats, petStats];
 
-  // Determine attack order in ids based on speed
   const actionOrder = calcBattle.actionOrderById(allStats);
 
   const targetInfo = verifyTarget(res, battle, data, opponentStats);
   if (!targetInfo) return;
   const { target, targetStats } = targetInfo;
 
-  // Keep track of what happens
   const log: string[] = [];
 
-  // Apply attacks. Can only attack if health and mood > 0
-  for (const attackerId of actionOrder) {
-    if (attackerId === petComparisonId) {
+  const allActors = battle.opponents.reduce(
+    (acc: { [key: number]: NpcInstance | Pet }, opponent) => {
+      acc[opponent.id] = opponent;
+      return acc;
+    },
+    {}
+  );
+  allActors[petComparisonId] = userPet;
+
+  // Apply actions. Can only act if health and mood > 0
+  for (const actorId of actionOrder) {
+    log.push(`${allActors[actorId].name}'s turn:`);
+    if (
+      allActors[actorId].currentHealth <= 0 ||
+      allActors[actorId].currentMood <= 0
+    ) {
+      continue;
+    }
+    if (actorId === petComparisonId) {
       if (userPet.currentHealth > 0 && userPet.currentMood > 0) {
         // calc damage to target
         const didHit = calcBattle.hit(petStats.accuracy, targetStats.speed);
