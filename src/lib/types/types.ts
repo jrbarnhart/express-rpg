@@ -81,4 +81,14 @@ export type PveBattleWithOpponents = Prisma.PveBattleGetPayload<{
   include: { opponents: true };
 }>;
 
+export interface iVirtualStats {
+  speed: number;
+  speedBonus: number;
+  accuracy: number;
+  accuracyBonus: number;
+  power: number;
+  powerBonus: number;
+  id: number;
+}
+
 export type iPveAttackResponse = unknown;
