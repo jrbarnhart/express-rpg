@@ -1,4 +1,4 @@
-const calcHit = (attackerAccuracy: number, targetSpeed: number, k = 0.1) => {
+const hit = (attackerAccuracy: number, targetSpeed: number, k = 0.1) => {
   const maxPenalty = 0.5;
   const exponent = k * (targetSpeed - attackerAccuracy);
   const sigmoid = 1 / (1 + Math.exp(exponent));
@@ -6,7 +6,7 @@ const calcHit = (attackerAccuracy: number, targetSpeed: number, k = 0.1) => {
   return Math.random() < hitChance;
 };
 
-const calcDamage = (attackerPower: number) => {
+const damage = (attackerPower: number) => {
   const critChance = 0.5;
   const powerMod = 0.2;
   const didCrit = Math.random() < critChance;
@@ -15,8 +15,8 @@ const calcDamage = (attackerPower: number) => {
 };
 
 const actionHelpers = {
-  calcHit,
-  calcDamage,
+  hit,
+  damage,
 };
 
 export default actionHelpers;
