@@ -17,11 +17,9 @@ import { Pet } from "@prisma/client";
 import sendResponse from "../sendResponse";
 import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
-import npcInstanceQuery from "../../prisma/queries/npcInstanceQuery";
-import actionHelpers from "./actionHelpers";
-import petQuery from "../../prisma/queries/petQuery";
+import calcBattle from "./calcBattle";
 
-const attack = async (
+const handlePveBattleAction = async (
   res: Response,
   data: z.infer<typeof PveBattleActionSchema>,
   battle: PveBattleWithOpponents,
@@ -79,22 +77,23 @@ const attack = async (
   const log: string[] = [];
 
   // Apply attacks. Can only attack if health and mood > 0
-  const damageMod = 0.2;
   for (const attackerId of attackOrder) {
     if (attackerId === petComparisonId) {
       if (userPet.currentHealth > 0 && userPet.currentMood > 0) {
         // calc damage to target
-        const hitChance = actionHelpers.calcHitChance(
-          petStats.accuracy,
-          targetStats.speed
-        );
-        const didHit = Math.random() <= hitChance;
-        const damage = petStats.power * damageMod;
+        const didHit = calcBattle.hit(petStats.accuracy, targetStats.speed);
+
+        const { damage, didCrit } = calcBattle.damage(petStats.power);
+
         const newCurrentHealth = Math.min(target.currentHealth - damage, 0);
         // log
         log.push(
-          `Your pet attacked ${target.name} (${hitChance * 100}%. ${
-            didHit ? `It hit and did ${damage} health damage.` : "It missed..."
+          `Your pet attacked ${target.name}. ${
+            didHit
+              ? `It ${
+                  didCrit ? "CRITICALLY " : ""
+                }hit and did ${damage} health damage.`
+              : "It missed..."
           }`
         );
         /* const updatedTarget = await npcInstanceQuery.update(data.targetId, {
@@ -113,10 +112,6 @@ const attack = async (
     opponentStats,
     log,
   });
-};
-
-const handlePveBattleAction = {
-  attack,
 };
 
 export default handlePveBattleAction;

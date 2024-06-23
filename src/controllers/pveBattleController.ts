@@ -8,7 +8,6 @@ import { iNewBattleData } from "../lib/types/types";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
 import validateRequestData from "../lib/zod/validateRequestData";
 import {
-  ACTION_OPTIONS,
   PveBattleActionSchema,
   UpdatePveBattleSchema,
 } from "../lib/zod/PveBattle";
@@ -137,10 +136,7 @@ const pve_battle_action = asyncHandler(async (req, res) => {
     return;
   }
 
-  switch (data.action) {
-    case ACTION_OPTIONS.attack:
-      handlePveBattleAction.attack(res, data, activeBattle, activePet);
-  }
+  handlePveBattleAction(res, data, activeBattle, activePet);
 
   /* 
     Handle attack
