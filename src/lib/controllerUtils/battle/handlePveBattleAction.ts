@@ -41,18 +41,7 @@ const handlePveBattleAction = async (
   const allStats = [...opponentStats, petStats];
 
   // Determine attack order in ids based on speed
-  const attackOrder = allStats
-    .sort((a, b) => {
-      if (a.speed < b.speed) {
-        return -1;
-      } else if (a.speed > b.speed) {
-        return 1;
-      }
-      return 0;
-    })
-    .map((stats) => {
-      return stats.id;
-    });
+  const actionOrder = calcBattle.actionOrderById(allStats);
 
   const target = battle.opponents.find(
     (opponent) => opponent.id === data.targetId
@@ -77,7 +66,7 @@ const handlePveBattleAction = async (
   const log: string[] = [];
 
   // Apply attacks. Can only attack if health and mood > 0
-  for (const attackerId of attackOrder) {
+  for (const attackerId of actionOrder) {
     if (attackerId === petComparisonId) {
       if (userPet.currentHealth > 0 && userPet.currentMood > 0) {
         // calc damage to target
