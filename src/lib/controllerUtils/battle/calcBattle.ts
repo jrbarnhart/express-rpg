@@ -20,9 +20,9 @@ const actionOrderById = (allStats: VirtualStats[]) => {
   const actionOrder = allStats
     .sort((a, b) => {
       if (a.speed < b.speed) {
-        return -1;
-      } else if (a.speed > b.speed) {
         return 1;
+      } else if (a.speed > b.speed) {
+        return -1;
       }
       return 0; // Maybe randomize this later to be 50/50?
     })
