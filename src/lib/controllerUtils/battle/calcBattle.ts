@@ -16,7 +16,7 @@ const damage = (attackerPower: number) => {
   return { damage: attackerPower * powerMod * critMod, didCrit };
 };
 
-const actionOrderById = (allStats: VirtualStats[]) => {
+const actorOrder = (allStats: VirtualStats[]) => {
   const actionOrder = allStats
     .sort((a, b) => {
       if (a.speed < b.speed) {
@@ -36,7 +36,7 @@ const actionOrderById = (allStats: VirtualStats[]) => {
 const calcBattle = {
   hit,
   damage,
-  actionOrderById,
+  actorOrder,
 };
 
 export default calcBattle;
