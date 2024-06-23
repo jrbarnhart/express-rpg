@@ -88,6 +88,8 @@ export type VirtualStats = {
   accuracyBonus: number;
   power: number;
   powerBonus: number;
+  wit: number;
+  witBonus: number;
   id: number;
 };
 

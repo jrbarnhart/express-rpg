@@ -25,6 +25,7 @@ interface CalcVirtualStats {
   speed: StatCalculator;
   accuracy: StatCalculator;
   power: StatCalculator;
+  wit: StatCalculator;
 }
 
 const MODIFY: ModifyConfig = {
@@ -38,8 +39,12 @@ const MODIFY: ModifyConfig = {
     byMood: 0.75,
   },
   power: {
-    byHealth: 0.5,
-    byMood: 0.5,
+    byHealth: 0.9,
+    byMood: 0.1,
+  },
+  wit: {
+    byHealth: 0.1,
+    byMood: 0.9,
   },
 };
 
@@ -77,6 +82,7 @@ export const calcAllVirtualStats = (petOrNpc: Pet | NpcInstance) => {
     calcVirtualStats.accuracy(petOrNpc);
   const { totalStat: power, bonusMod: powerBonus } =
     calcVirtualStats.power(petOrNpc);
+  const { totalStat: wit, bonusMod: witBonus } = calcVirtualStats.wit(petOrNpc);
 
   const allVirtualStats: VirtualStats = {
     speed,
@@ -85,6 +91,8 @@ export const calcAllVirtualStats = (petOrNpc: Pet | NpcInstance) => {
     accuracyBonus,
     power,
     powerBonus,
+    wit,
+    witBonus,
     id: petOrNpc.id,
   };
 
