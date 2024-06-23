@@ -18,6 +18,7 @@ import sendResponse from "../sendResponse";
 import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
 import calcBattle from "./calcBattle";
+import verifyTarget from "./verifyTarget";
 
 const handlePveBattleAction = async (
   res: Response,
@@ -43,24 +44,9 @@ const handlePveBattleAction = async (
   // Determine attack order in ids based on speed
   const actionOrder = calcBattle.actionOrderById(allStats);
 
-  const target = battle.opponents.find(
-    (opponent) => opponent.id === data.targetId
-  );
-  if (!target) {
-    sendErrorResponse(
-      res,
-      "Cannot attack opponent that is not a part of this battle."
-    );
-    return;
-  }
-  const targetStats = allStats.find((stats) => stats.id === data.targetId);
-  if (!targetStats) {
-    sendErrorResponse(
-      res,
-      "Target's stats were not found. Check targetId and try again."
-    );
-    return;
-  }
+  const targetInfo = verifyTarget(res, battle, data, opponentStats);
+  if (!targetInfo) return;
+  const { target, targetStats } = targetInfo;
 
   // Keep track of what happens
   const log: string[] = [];
