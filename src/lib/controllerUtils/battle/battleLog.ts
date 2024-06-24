@@ -11,8 +11,14 @@ const battleLog = () => {
 
   return {
     data,
+    actorDied: (actor: ActorWithAction) => {
+      data.push(`${actorName(actor)} collapsed lifelessly to the ground.`);
+    },
     actorDead: (actor: ActorWithAction) => {
       data.push(`It looks like ${actorName(actor)} isn't breathing...`);
+    },
+    actorMindloss: (actor: ActorWithAction) => {
+      data.push(`The light fades from ${actorName(actor)}'s eyes.`);
     },
     actorMindless: (actor: ActorWithAction) => {
       data.push(
