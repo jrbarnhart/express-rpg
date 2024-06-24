@@ -1,4 +1,6 @@
-import { VirtualStats } from "../../types/types";
+import { NpcInstance } from "@prisma/client";
+import { ActorWithStats, VirtualStats } from "../../types/types";
+import { ACTION_OPTIONS } from "../../zod/PveBattle";
 
 const hit = (attackerAccuracy: number, targetSpeed: number, k = 0.1) => {
   const maxPenalty = 0.5;
@@ -16,26 +18,24 @@ const damage = (attackerPower: number) => {
   return { damage: attackerPower * powerMod * critMod, didCrit };
 };
 
-const actorOrder = (allStats: VirtualStats[]) => {
-  const actionOrder = allStats
-    .sort((a, b) => {
-      if (a.speed < b.speed) {
-        return 1;
-      } else if (a.speed > b.speed) {
-        return -1;
-      }
-      return 0; // Maybe randomize this later to be 50/50?
-    })
-    .map((stats) => {
-      return stats.id;
-    });
+const actorOrder = (actorsWithStats: ActorWithStats[]) => {
+  const actorsBySpeed = actorsWithStats.sort((a, b) => {
+    if (a.speed < b.speed) {
+      return 1;
+    } else if (a.speed > b.speed) {
+      return -1;
+    }
+    return 0; // Maybe randomize this later to be 50/50?
+  });
 
-  return actionOrder;
+  return actorsBySpeed;
 };
 
-const opponentActions = () => {
+const opponentActions = (
+  opponents: NpcInstance[],
+  opponentStats: VirtualStats[]
+) => {
   // Should it defend
-  // if (health/mood  is 50% or less) roll to see if defend
   // Should it attack or insult
   // if (power >>> wit) then attack
   // if (wit >>> power) then insult
