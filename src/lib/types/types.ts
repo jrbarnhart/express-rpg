@@ -2,7 +2,6 @@ import {
   Color,
   NpcInstance,
   NpcTemplate,
-  Pet,
   Prisma,
   PveBattle,
   Species,
