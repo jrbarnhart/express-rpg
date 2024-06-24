@@ -17,6 +17,10 @@ const damage = (attackerPower: number) => {
   return { damage: Math.round(attackerPower * powerMod * critMod), didCrit };
 };
 
+const defenseRecovery = (power: number, wit: number) => {
+  return Math.round(0.05 * (power + wit));
+};
+
 const actorOrder = (actorsWithStats: ActorWithStats[]) => {
   const actorsBySpeed = actorsWithStats.sort((a, b) => {
     if (a.speed < b.speed) {
@@ -70,6 +74,7 @@ const actions = (
 const calcBattle = {
   hit,
   damage,
+  defenseRecovery,
   actorOrder,
   actions,
 };
