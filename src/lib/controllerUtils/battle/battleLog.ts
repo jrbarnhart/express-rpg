@@ -32,12 +32,29 @@ const battleLog = () => {
       damage: number
     ) => {
       data.push(
-        `${actorName(actor)} attacked ${actorName(target)}. ${
+        `${actorName(actor)} brutally attacked ${actorName(target)}. ${
           didHit
             ? `It ${
                 didCrit ? "CRITICALLY " : ""
               }hit and did ${damage} health damage.`
             : "It missed..."
+        }`
+      );
+    },
+    actorInsulted: (
+      actor: ActorWithAction,
+      target: ActorWithAction,
+      didHit: boolean,
+      didCrit: boolean,
+      damage: number
+    ) => {
+      data.push(
+        `${actorName(actor)} viciously insulted ${actorName(target)}. ${
+          didHit
+            ? `${actorName(target)} was ${
+                didCrit ? "CRITICALLY " : ""
+              }crushed and took ${damage} mood damage.`
+            : `${actorName(target)} wasn't listening...`
         }`
       );
     },
