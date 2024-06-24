@@ -2,6 +2,7 @@ import {
   Color,
   NpcInstance,
   NpcTemplate,
+  Pet,
   Prisma,
   PveBattle,
   Species,
@@ -93,3 +94,5 @@ export type VirtualStats = {
 };
 
 export type iPveAttackResponse = unknown;
+
+export type ActorWithStats = (Pet | NpcInstance) & VirtualStats;
