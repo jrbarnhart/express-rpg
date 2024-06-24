@@ -1,6 +1,7 @@
 import npcInstanceQuery from "../../prisma/queries/npcInstanceQuery";
 import petQuery from "../../prisma/queries/petQuery";
-import { ActorWithAction } from "../../types/types";
+import pveBattleQuery from "../../prisma/queries/pveBattlesQuery";
+import { ActorWithAction, PveBattleWithOpponents } from "../../types/types";
 
 const forAttack = (
   actor: ActorWithAction,
@@ -61,10 +62,18 @@ const forDefend = (
   });
 };
 
+const forUserRun = (actor: ActorWithAction, battle: PveBattleWithOpponents) => {
+  return pveBattleQuery.update(battle.id, {
+    isActive: false,
+    isVictory: false,
+  });
+};
+
 const getActionQuery = {
   forAttack,
   forInsult,
   forDefend,
+  forUserRun,
 };
 
 export default getActionQuery;
