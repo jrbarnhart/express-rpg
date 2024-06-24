@@ -11,7 +11,6 @@ import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
 import calcBattle from "./calcBattle";
 import battleLog from "./battleLog";
-import { Prisma } from "@prisma/client";
 import getActionQuery from "./getActionQuery";
 
 const handlePveBattleAction = async (
@@ -88,13 +87,19 @@ const handlePveBattleAction = async (
         didAttack ? actor.power : actor.wit
       );
 
+      if (didAttack) {
+        log.actorAttacked(actor, target);
+      } else {
+        log.actorInsulted(actor, target);
+      }
+
       if (didAttack && didHit) {
-        log.actorAttacked(actor, target, didCrit, damage);
+        log.actorAttackHit(actor, target, didCrit, damage);
         actionQueries.push(
           getActionQuery.forAttack(actor, damage, petComparisonId)
         );
       } else if (!didAttack && didHit) {
-        log.actorInsulted(actor, target, didCrit, damage);
+        log.actorInsultHit(actor, target, didCrit, damage);
         actionQueries.push(
           getActionQuery.forInsult(actor, damage, petComparisonId)
         );
@@ -109,14 +114,20 @@ const handlePveBattleAction = async (
     if (actor.action === ACTION_OPTIONS.defend) {
       const recoveryAmount = calcBattle.defenseRecovery(actor.power, actor.wit);
       log.actorDefended(actor, recoveryAmount);
+      actionQueries.push(
+        getActionQuery.forDefend(actor, recoveryAmount, petComparisonId)
+      );
       continue;
     }
 
+    // It is assumed that only user pets will run as of now
+    // Npc run actions just log the action but don't do anything
     if (actor.action === ACTION_OPTIONS.run) {
       const escapeChance = calcBattle.escape(actor);
       const didEscape = Math.random() <= escapeChance;
-      if (didEscape) {
+      if (didEscape && actor.id === petComparisonId) {
         log.actorRan(actor);
+        actionQueries.push(getActionQuery.forUserRun(actor, battle));
       } else {
         log.actorRanFailed(actor);
       }
