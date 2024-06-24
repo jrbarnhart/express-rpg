@@ -58,6 +58,13 @@ const battleLog = () => {
         }`
       );
     },
+    actorDefended: (actor: ActorWithAction, recoveryAmount: number) => {
+      data.push(
+        `${actorName(
+          actor
+        )} defended itself, increasing its health and mood by ${recoveryAmount}.`
+      );
+    },
   };
 };
 
