@@ -11,6 +11,8 @@ import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
 import calcBattle from "./calcBattle";
 import battleLog from "./battleLog";
+import { Prisma } from "@prisma/client";
+import getActionQuery from "./getActionQuery";
 
 const handlePveBattleAction = async (
   res: Response,
@@ -59,6 +61,8 @@ const handlePveBattleAction = async (
 
   const log = battleLog();
 
+  const actionQueries = [];
+
   for (const actor of actorsWithAction) {
     log.actorTurn(actor);
     // Can only act if health and mood > 0
@@ -83,13 +87,22 @@ const handlePveBattleAction = async (
       const { damage, didCrit } = calcBattle.damage(
         didAttack ? actor.power : actor.wit
       );
-      if (didAttack) {
-        log.actorAttacked(actor, target, didHit, didCrit, damage);
+
+      if (didAttack && didHit) {
+        log.actorAttacked(actor, target, didCrit, damage);
+        actionQueries.push(
+          getActionQuery.forAttack(actor, damage, petComparisonId)
+        );
+      } else if (!didAttack && didHit) {
+        log.actorInsulted(actor, target, didCrit, damage);
+        actionQueries.push(
+          getActionQuery.forInsult(actor, damage, petComparisonId)
+        );
       } else {
-        log.actorInsulted(actor, target, didHit, didCrit, damage);
+        log.actorMissed(actor, target);
       }
 
-      // Handle db results
+      console.log(actionQueries.toString());
       continue;
     }
 
@@ -116,7 +129,7 @@ const handlePveBattleAction = async (
 
   // Can only attack target with health and mood > 0
   // Add attacks and results to log as they happen
-  sendResponse(res, "Attack successful!", {
+  sendResponse(res, "Action successful!", {
     actorsBySpeed,
     logData,
   });
