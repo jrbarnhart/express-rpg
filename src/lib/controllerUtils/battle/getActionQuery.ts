@@ -4,29 +4,25 @@ import pveBattleQuery from "../../prisma/queries/pveBattlesQuery";
 import { ActorWithAction, PveBattleWithOpponents } from "../../types/types";
 
 const forAttack = (
-  actor: ActorWithAction,
-  damage: number,
+  target: ActorWithAction,
+  newHealth: number,
   petComparisonId: number
 ) => {
-  const isUserPet = actor.id === petComparisonId;
-
-  const newHealth = Math.min(actor.currentHealth - damage, 0);
+  const isUserPet = target.id === petComparisonId;
 
   if (isUserPet) {
-    return petQuery.update(actor.id, { currentHealth: newHealth });
+    return petQuery.update(target.id, { currentHealth: newHealth });
   }
 
-  return npcInstanceQuery.update(actor.id, { currentHealth: newHealth });
+  return npcInstanceQuery.update(target.id, { currentHealth: newHealth });
 };
 
 const forInsult = (
   actor: ActorWithAction,
-  damage: number,
+  newMood: number,
   petComparisonId: number
 ) => {
   const isUserPet = actor.id === petComparisonId;
-
-  const newMood = Math.min(actor.currentMood - damage, 0);
 
   if (isUserPet) {
     return petQuery.update(actor.id, { currentMood: newMood });
