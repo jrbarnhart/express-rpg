@@ -8,6 +8,7 @@ import {
   Species,
   User,
 } from "@prisma/client";
+import { ACTION_OPTIONS } from "../zod/PveBattle";
 
 export interface iResponseJSON {
   success: true | false;
@@ -96,3 +97,5 @@ export type VirtualStats = {
 export type iPveAttackResponse = unknown;
 
 export type ActorWithStats = (Pet | NpcInstance) & VirtualStats;
+
+export type ActorWithAction = ActorWithStats & { action: ACTION_OPTIONS };
