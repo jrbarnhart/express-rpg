@@ -80,24 +80,24 @@ export interface iNewBattleData {
 }
 
 export type PveBattleWithOpponents = Prisma.PveBattleGetPayload<{
-  include: { opponents: true };
+  include: {
+    opponents: {
+      include: {
+        template: {
+          select: {
+            color: { select: { name: true } };
+            species: { select: { name: true } };
+          };
+        };
+      };
+    };
+  };
 }>;
 
 export type PetWithColorSpecies = Prisma.PetGetPayload<{
   include: {
     color: { select: { name: true } };
     species: { select: { name: true } };
-  };
-}>;
-
-export type NpcInstanceWithColorSpecies = Prisma.NpcInstanceGetPayload<{
-  include: {
-    template: {
-      select: {
-        color: { select: { name: true } };
-        species: { select: { name: true } };
-      };
-    };
   };
 }>;
 
