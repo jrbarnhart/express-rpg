@@ -101,6 +101,17 @@ export type PetWithColorSpecies = Prisma.PetGetPayload<{
   };
 }>;
 
+export type NpcInstanceWithColorSpecies = Prisma.NpcInstanceGetPayload<{
+  include: {
+    template: {
+      select: {
+        color: { select: { name: true } };
+        species: { select: { name: true } };
+      };
+    };
+  };
+}>;
+
 export type VirtualStats = {
   speed: number;
   speedBonus: number;
@@ -114,6 +125,10 @@ export type VirtualStats = {
 
 export type iPveAttackResponse = unknown;
 
-export type ActorWithStats = (Pet | NpcInstance) & VirtualStats;
+export type ActorWithStats = (
+  | PetWithColorSpecies
+  | NpcInstanceWithColorSpecies
+) &
+  VirtualStats;
 
 export type ActorWithAction = ActorWithStats & { action: ACTION_OPTIONS };
