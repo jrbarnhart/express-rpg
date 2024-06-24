@@ -100,7 +100,15 @@ const handlePveBattleAction = async (
     }
 
     if (actor.action === ACTION_OPTIONS.run) {
-      // Handle run
+      const escapeChance = calcBattle.escape(actor);
+      const didEscape = Math.random() <= escapeChance;
+      if (didEscape) {
+        log.actorRan(actor);
+      } else {
+        log.actorRanFailed(actor);
+      }
+      // Handle db results
+      // Break on user run, handle db on npc run
     }
   }
 
