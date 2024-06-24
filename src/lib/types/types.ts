@@ -83,6 +83,24 @@ export type PveBattleWithOpponents = Prisma.PveBattleGetPayload<{
   include: { opponents: true };
 }>;
 
+export type PetWithColorSpecies = Prisma.PetGetPayload<{
+  include: {
+    color: { select: { name: true } };
+    species: { select: { name: true } };
+  };
+}>;
+
+export type NpcInstanceWithColorSpecies = Prisma.NpcInstanceGetPayload<{
+  include: {
+    template: {
+      select: {
+        color: { select: { name: true } };
+        species: { select: { name: true } };
+      };
+    };
+  };
+}>;
+
 export type VirtualStats = {
   speed: number;
   speedBonus: number;
