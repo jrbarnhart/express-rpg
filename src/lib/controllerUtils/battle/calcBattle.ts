@@ -33,10 +33,20 @@ const actorOrder = (allStats: VirtualStats[]) => {
   return actionOrder;
 };
 
+const opponentActions = () => {
+  // Should it defend
+  // if (health/mood  is 50% or less) roll to see if defend
+  // Should it attack or insult
+  // if (power >>> wit) then attack
+  // if (wit >>> power) then insult
+  // if (wit >< power) then attack based on lowest pet stat of mood or health
+};
+
 const calcBattle = {
   hit,
   damage,
   actorOrder,
+  opponentActions,
 };
 
 export default calcBattle;
