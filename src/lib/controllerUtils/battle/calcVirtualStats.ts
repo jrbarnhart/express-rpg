@@ -55,9 +55,10 @@ const createStatCalculator = (
   return (petOrNpc: Pet | NpcInstance) => {
     const baseStat =
       petOrNpc.health * modify.byHealth + petOrNpc.mood * modify.byMood;
-    const bonusMod =
+    const bonusMod = +(
       (petOrNpc.currentHealth / petOrNpc.health) * modify.byHealth +
-      (petOrNpc.currentMood / petOrNpc.mood) * modify.byMood;
+      (petOrNpc.currentMood / petOrNpc.mood) * modify.byMood
+    ).toFixed(2);
     const currentBonus = baseStat * MODIFY.currentBonus * bonusMod;
     const totalStat = Math.round(baseStat + currentBonus);
     return {
