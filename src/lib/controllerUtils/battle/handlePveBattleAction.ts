@@ -9,11 +9,11 @@
     6. If pet dies (currentHealth/Mood <= 0) then set battle isActive = false
        and send loss response
     7. Send default battle response */
-import { ACTION_OPTIONS, PveBattleActionSchema } from "../../zod/PveBattle";
+import { PveBattleActionSchema } from "../../zod/PveBattle";
 import { Response } from "express";
-import { PveBattleWithOpponents } from "../../types/types";
+import { ActorWithStats, PveBattleWithOpponents } from "../../types/types";
 import sendErrorResponse from "../sendErrorResponse";
-import { NpcInstance, Pet } from "@prisma/client";
+import { Pet } from "@prisma/client";
 import sendResponse from "../sendResponse";
 import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
@@ -32,40 +32,32 @@ const handlePveBattleAction = async (
   }
 
   const petStats = calcAllVirtualStats(userPet);
+  const petWithStats = { ...userPet, ...petStats };
   // Set id to distinguish pet stats from npc instance stats and never overlap
   const petComparisonId = -999;
-  petStats.id = petComparisonId;
+  petWithStats.id = petComparisonId;
 
-  const opponentStats = battle.opponents.map((opponent) => {
-    return calcAllVirtualStats(opponent);
+  const opponentsWithStats = battle.opponents.map((opponent) => {
+    return { ...opponent, ...calcAllVirtualStats(opponent) };
   });
 
-  const allStats = [...opponentStats, petStats];
+  const actorsWithStats: ActorWithStats[] = [
+    petWithStats,
+    ...opponentsWithStats,
+  ];
 
-  const actorOrder = calcBattle.actorOrder(allStats);
+  const actorsBySpeed = calcBattle.actorOrder(actorsWithStats);
 
-  const targetInfo = verifyTarget(res, battle, data, opponentStats);
+  const targetInfo = verifyTarget(res, battle, data, opponentsWithStats);
   if (!targetInfo) return;
   const { target, targetStats } = targetInfo;
 
   const log: string[] = [];
 
-  const allActors = battle.opponents.reduce(
-    (acc: { [key: number]: NpcInstance | Pet }, opponent) => {
-      acc[opponent.id] = opponent;
-      return acc;
-    },
-    {}
-  );
-  allActors[petComparisonId] = userPet;
-
-  for (const actorId of actorOrder) {
-    log.push(`${allActors[actorId].name}'s turn:`);
+  for (const actor of actorsBySpeed) {
+    log.push(`${actor.name}'s turn:`);
     // Can only act if health and mood > 0
-    if (
-      allActors[actorId].currentHealth <= 0 ||
-      allActors[actorId].currentMood <= 0
-    ) {
+    if (actor.currentHealth <= 0 || actor.currentMood <= 0) {
       continue;
     }
 
@@ -88,7 +80,7 @@ const handlePveBattleAction = async (
       // Handle run
     } */
 
-    if (actorId === petComparisonId) {
+    if (actor.id === petComparisonId) {
       // calc damage to target
       const didHit = calcBattle.hit(petStats.accuracy, targetStats.speed);
 
@@ -117,7 +109,7 @@ const handlePveBattleAction = async (
   // Add attacks and results to log as they happen
   sendResponse(res, "Attack successful!", {
     petStats,
-    opponentStats,
+    opponentStats: opponentsWithStats,
     log,
   });
 };
