@@ -86,6 +86,12 @@ const handlePveBattleAction = async (
       const { damage, didCrit } = calcBattle.damage(
         didAttack ? actor.power : actor.wit
       );
+      const newTargetHealth = didAttack
+        ? Math.min(target.currentHealth - damage, 0)
+        : target.currentHealth;
+      const newTargetMood = !didAttack
+        ? Math.min(target.currentMood - damage, 0)
+        : target.currentMood;
 
       if (didAttack) {
         log.actorAttacked(actor, target);
@@ -96,15 +102,23 @@ const handlePveBattleAction = async (
       if (didAttack && didHit) {
         log.actorAttackHit(actor, target, didCrit, damage);
         actionQueries.push(
-          getActionQuery.forAttack(actor, damage, petComparisonId)
+          getActionQuery.forAttack(actor, newTargetHealth, petComparisonId)
         );
       } else if (!didAttack && didHit) {
         log.actorInsultHit(actor, target, didCrit, damage);
         actionQueries.push(
-          getActionQuery.forInsult(actor, damage, petComparisonId)
+          getActionQuery.forInsult(actor, newTargetMood, petComparisonId)
         );
       } else {
         log.actorMissed(actor, target);
+      }
+
+      if (newTargetHealth === 0) {
+        log.actorDied(target);
+      }
+
+      if (newTargetMood === 0) {
+        log.actorMindloss(actor);
       }
 
       console.log(actionQueries.toString());
@@ -128,11 +142,10 @@ const handlePveBattleAction = async (
       if (didEscape && actor.id === petComparisonId) {
         log.actorRan(actor);
         actionQueries.push(getActionQuery.forUserRun(actor, battle));
+        break; // The battle is over if the user runs so no more actions
       } else {
         log.actorRanFailed(actor);
       }
-      // Handle db results
-      // Break on user run, handle db on npc run
     }
   }
 
