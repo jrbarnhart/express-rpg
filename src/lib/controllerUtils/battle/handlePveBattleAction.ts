@@ -85,7 +85,11 @@ const handlePveBattleAction = async (
       const { damage, didCrit } = calcBattle.damage(
         didAttack ? actor.power : actor.wit
       );
-      log.actorAttacked(actor, target, didHit, didCrit, damage);
+      if (didAttack) {
+        log.actorAttacked(actor, target, didHit, didCrit, damage);
+      } else {
+        log.actorInsulted(actor, target, didHit, didCrit, damage);
+      }
       continue;
     }
 
