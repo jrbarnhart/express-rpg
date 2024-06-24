@@ -2,7 +2,7 @@ import { ActorWithAction } from "../../types/types";
 import { ACTION_OPTIONS } from "../../zod/PveBattle";
 
 const battleLog = () => {
-  const data: string[] = [];
+  let data: string[] = [];
 
   const actorName = (actor: ActorWithAction) => {
     const isPet = "color" in actor;
@@ -78,6 +78,9 @@ const battleLog = () => {
       data.push(
         `${actorName(actor)} tried to get away but its escape was blocked.`
       );
+    },
+    clear: () => {
+      data = [];
     },
   };
 };
