@@ -68,6 +68,11 @@ const battleLog = () => {
     actorRan: (actor: ActorWithAction) => {
       data.push(`${actorName(actor)} ran away in a panic.`);
     },
+    actorRanFailed: (actor: ActorWithAction) => {
+      data.push(
+        `${actorName(actor)} tried to get away but its escape was blocked.`
+      );
+    },
   };
 };
 
