@@ -25,30 +25,34 @@ const battleLog = () => {
     actorTurn: (actor: ActorWithAction) => {
       data.push(`${actorName(actor)} prepares to act.`);
     },
-    actorAttacked: (
+    actorAttacked: (actor: ActorWithAction, target: ActorWithAction) => {
+      data.push(`${actorName(actor)} brutally attacked ${actorName(target)}.`);
+    },
+    actorAttackHit: (
       actor: ActorWithAction,
       target: ActorWithAction,
       didCrit: boolean,
       damage: number
     ) => {
       data.push(
-        `${actorName(actor)} brutally attacked ${actorName(target)}. ${`It ${
+        `${`It ${
           didCrit ? "CRITICALLY " : ""
         }hit and did ${damage} health damage.`}`
       );
     },
-    actorInsulted: (
+    actorInsulted: (actor: ActorWithAction, target: ActorWithAction) => {
+      data.push(`${actorName(actor)} viciously insulted ${actorName(target)}.`);
+    },
+    actorInsultHit: (
       actor: ActorWithAction,
       target: ActorWithAction,
       didCrit: boolean,
       damage: number
     ) => {
       data.push(
-        `${actorName(actor)} viciously insulted ${actorName(
-          target
-        )}. ${`${actorName(target)} was ${
+        `${actorName(target)} was ${
           didCrit ? "CRITICALLY " : ""
-        }crushed and took ${damage} mood damage.`}`
+        }discouraged and took ${damage} mood damage.`
       );
     },
     actorMissed: (actor: ActorWithAction, target: ActorWithAction) => {
