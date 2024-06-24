@@ -18,7 +18,6 @@ import sendResponse from "../sendResponse";
 import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
 import calcBattle from "./calcBattle";
-import verifyTarget from "./verifyTarget";
 
 const handlePveBattleAction = async (
   res: Response,
@@ -48,9 +47,16 @@ const handlePveBattleAction = async (
 
   const actorsBySpeed = calcBattle.actorOrder(actorsWithStats);
 
-  const targetInfo = verifyTarget(res, battle, data, opponentsWithStats);
-  if (!targetInfo) return;
-  const { target, targetStats } = targetInfo;
+  const target = actorsBySpeed.find((actor) => {
+    actor.id === data.targetId;
+  });
+  if (!target) {
+    sendErrorResponse(
+      res,
+      "Target was not found. Check targetId and try again."
+    );
+    return;
+  }
 
   const log: string[] = [];
 
@@ -82,7 +88,7 @@ const handlePveBattleAction = async (
 
     if (actor.id === petComparisonId) {
       // calc damage to target
-      const didHit = calcBattle.hit(petStats.accuracy, targetStats.speed);
+      const didHit = calcBattle.hit(petStats.accuracy, target.speed);
 
       const { damage, didCrit } = calcBattle.damage(petStats.power);
 
