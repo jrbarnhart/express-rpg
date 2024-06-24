@@ -47,7 +47,13 @@ const handlePveBattleAction = async (
 
   const actorsBySpeed = calcBattle.actorOrder(actorsWithStats);
 
-  const target = actorsBySpeed.find((actor) => {
+  const actorsWithAction = calcBattle.actions(
+    actorsBySpeed,
+    petComparisonId,
+    data.action
+  );
+
+  const target = actorsWithAction.find((actor) => {
     return actor.id === data.targetId;
   });
   if (!target) {
@@ -60,7 +66,7 @@ const handlePveBattleAction = async (
 
   const log: string[] = [];
 
-  for (const actor of actorsBySpeed) {
+  for (const actor of actorsWithAction) {
     log.push(`${actor.name}'s turn:`);
     // Can only act if health and mood > 0
     if (actor.currentHealth <= 0 || actor.currentMood <= 0) {
