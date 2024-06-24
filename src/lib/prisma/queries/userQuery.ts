@@ -24,7 +24,16 @@ const list = () => {
 const findById = (id: number) => {
   return prisma.user.findUnique({
     where: { id },
-    select: { id: true, username: true, pets: true },
+    select: {
+      id: true,
+      username: true,
+      pets: {
+        include: {
+          color: { select: { name: true } },
+          species: { select: { name: true } },
+        },
+      },
+    },
   });
 };
 

@@ -11,7 +11,18 @@ const list = () => {
 const findById = (id: number) => {
   return prisma.pveBattle.findUnique({
     where: { id },
-    include: { opponents: true },
+    include: {
+      opponents: {
+        include: {
+          template: {
+            select: {
+              color: { select: { name: true } },
+              species: { select: { name: true } },
+            },
+          },
+        },
+      },
+    },
   });
 };
 
