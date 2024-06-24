@@ -95,6 +95,13 @@ const battleLog = () => {
         )} trod over the bodies of your fallen enemies as you continue on your way.`
       );
     },
+    battleDraw: (pet: ActorWithAction) => {
+      data.push(
+        `You look out across the battlefield at the dead and broken. As you gather ${actorName(
+          pet
+        )}'s remains you wonder if anything really matters at all.`
+      );
+    },
     clear: () => {
       data = [];
     },
