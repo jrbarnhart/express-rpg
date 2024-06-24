@@ -48,7 +48,7 @@ const handlePveBattleAction = async (
   const actorsBySpeed = calcBattle.actorOrder(actorsWithStats);
 
   const target = actorsBySpeed.find((actor) => {
-    actor.id === data.targetId;
+    return actor.id === data.targetId;
   });
   if (!target) {
     sendErrorResponse(
@@ -114,8 +114,7 @@ const handlePveBattleAction = async (
   // Can only attack target with health and mood > 0
   // Add attacks and results to log as they happen
   sendResponse(res, "Attack successful!", {
-    petStats,
-    opponentStats: opponentsWithStats,
+    actorsBySpeed,
     log,
   });
 };
