@@ -18,17 +18,17 @@ const forAttack = (
 };
 
 const forInsult = (
-  actor: ActorWithAction,
+  target: ActorWithAction,
   newMood: number,
   petComparisonId: number
 ) => {
-  const isUserPet = actor.id === petComparisonId;
+  const isUserPet = target.id === petComparisonId;
 
   if (isUserPet) {
-    return petQuery.update(actor.id, { currentMood: newMood });
+    return petQuery.update(target.id, { currentMood: newMood });
   }
 
-  return npcInstanceQuery.update(actor.id, { currentMood: newMood });
+  return npcInstanceQuery.update(target.id, { currentMood: newMood });
 };
 
 const forDefend = (
