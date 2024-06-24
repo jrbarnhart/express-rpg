@@ -1,29 +1,22 @@
-/*     1. Verify target
-    2. Calculate damage and apply to npc instances
-    3. If no foes remain (currentHealth/Mood > 0) then set battle isActive = false 
-       and isVictory = true and send victory response
-    4. For each remaining enemy 
-        a. Determine action (attack, defend)
-        b. Calculate damage
-    5. Apply damage to user pet
-    6. If pet dies (currentHealth/Mood <= 0) then set battle isActive = false
-       and send loss response
-    7. Send default battle response */
-import { PveBattleActionSchema } from "../../zod/PveBattle";
+import { ACTION_OPTIONS, PveBattleActionSchema } from "../../zod/PveBattle";
 import { Response } from "express";
-import { ActorWithStats, PveBattleWithOpponents } from "../../types/types";
+import {
+  ActorWithStats,
+  PetWithColorSpecies,
+  PveBattleWithOpponents,
+} from "../../types/types";
 import sendErrorResponse from "../sendErrorResponse";
-import { Pet } from "@prisma/client";
 import sendResponse from "../sendResponse";
 import { z } from "zod";
 import { calcAllVirtualStats } from "./calcVirtualStats";
 import calcBattle from "./calcBattle";
+import battleLog from "./battleLog";
 
 const handlePveBattleAction = async (
   res: Response,
   data: z.infer<typeof PveBattleActionSchema>,
   battle: PveBattleWithOpponents,
-  userPet: Pet
+  userPet: PetWithColorSpecies
 ) => {
   if (!data.targetId) {
     sendErrorResponse(res, "No target was declared for your attack.");
@@ -53,75 +46,66 @@ const handlePveBattleAction = async (
     data.action
   );
 
-  const target = actorsWithAction.find((actor) => {
+  const pet = actorsWithAction.find((actor) => {
+    return actor.id === petComparisonId;
+  });
+  const petTarget = actorsWithAction.find((actor) => {
     return actor.id === data.targetId;
   });
-  if (!target) {
-    sendErrorResponse(
-      res,
-      "Target was not found. Check targetId and try again."
-    );
+  if (!pet || !petTarget) {
+    sendErrorResponse(res, "Error executing action. Check data and try again.");
     return;
   }
 
-  const log: string[] = [];
+  const log = battleLog();
 
   for (const actor of actorsWithAction) {
-    log.push(`${actor.name}'s turn:`);
+    log.actorTurn(actor);
     // Can only act if health and mood > 0
     if (actor.currentHealth <= 0 || actor.currentMood <= 0) {
+      if (actor.currentHealth === 0 && actor.currentMood === 0) {
+        log.actorAshes(actor);
+      } else if (actor.currentHealth === 0) {
+        log.actorDead(actor);
+      } else {
+        log.actorMindless(actor);
+      }
       continue;
     }
 
-    /*    Replace data.action with the determiend action 
-      if (
-      data.action === ACTION_OPTIONS.attack ||
-      data.action === ACTION_OPTIONS.insult
+    if (
+      actor.action === ACTION_OPTIONS.attack ||
+      actor.action === ACTION_OPTIONS.insult
     ) {
       // Handle attack
       // Handle insult
+      const target = actor.id === petComparisonId ? petTarget : pet;
+      const didHit = calcBattle.hit(actor.accuracy, target.speed);
+      const didAttack = actor.action === ACTION_OPTIONS.attack;
+      const { damage, didCrit } = calcBattle.damage(
+        didAttack ? actor.power : actor.wit
+      );
+      log.actorAttacked(actor, target, didHit, didCrit, damage);
       continue;
     }
 
-    if (data.action === ACTION_OPTIONS.defend) {
+    if (actor.action === ACTION_OPTIONS.defend) {
       // Handle defend
       continue;
     }
 
-    if (data.action === ACTION_OPTIONS.run) {
+    if (actor.action === ACTION_OPTIONS.run) {
       // Handle run
-    } */
-
-    if (actor.id === petComparisonId) {
-      // calc damage to target
-      const didHit = calcBattle.hit(petStats.accuracy, target.speed);
-
-      const { damage, didCrit } = calcBattle.damage(petStats.power);
-
-      const newCurrentHealth = Math.min(target.currentHealth - damage, 0);
-      // log
-      log.push(
-        `Your pet attacked ${target.name}. ${
-          didHit
-            ? `It ${
-                didCrit ? "CRITICALLY " : ""
-              }hit and did ${damage} health damage.`
-            : "It missed..."
-        }`
-      );
-      /* const updatedTarget = await npcInstanceQuery.update(data.targetId, {
-          currentHealth: newCurrentHealth,
-        }); */
-    } else {
-      // Do npc action
     }
   }
+
+  const logData = log.data;
 
   // Can only attack target with health and mood > 0
   // Add attacks and results to log as they happen
   sendResponse(res, "Attack successful!", {
     actorsBySpeed,
-    log,
+    logData,
   });
 };
 
