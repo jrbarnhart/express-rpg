@@ -1,4 +1,5 @@
 import { ActorWithAction } from "../../types/types";
+import { ACTION_OPTIONS } from "../../zod/PveBattle";
 
 const battleLog = () => {
   const data: string[] = [];
@@ -27,35 +28,36 @@ const battleLog = () => {
     actorAttacked: (
       actor: ActorWithAction,
       target: ActorWithAction,
-      didHit: boolean,
       didCrit: boolean,
       damage: number
     ) => {
       data.push(
-        `${actorName(actor)} brutally attacked ${actorName(target)}. ${
-          didHit
-            ? `It ${
-                didCrit ? "CRITICALLY " : ""
-              }hit and did ${damage} health damage.`
-            : "It missed..."
-        }`
+        `${actorName(actor)} brutally attacked ${actorName(target)}. ${`It ${
+          didCrit ? "CRITICALLY " : ""
+        }hit and did ${damage} health damage.`}`
       );
     },
     actorInsulted: (
       actor: ActorWithAction,
       target: ActorWithAction,
-      didHit: boolean,
       didCrit: boolean,
       damage: number
     ) => {
       data.push(
-        `${actorName(actor)} viciously insulted ${actorName(target)}. ${
-          didHit
-            ? `${actorName(target)} was ${
-                didCrit ? "CRITICALLY " : ""
-              }crushed and took ${damage} mood damage.`
-            : `${actorName(target)} wasn't listening...`
-        }`
+        `${actorName(actor)} viciously insulted ${actorName(
+          target
+        )}. ${`${actorName(target)} was ${
+          didCrit ? "CRITICALLY " : ""
+        }crushed and took ${damage} mood damage.`}`
+      );
+    },
+    actorMissed: (actor: ActorWithAction, target: ActorWithAction) => {
+      data.push(
+        `${
+          actor.action === ACTION_OPTIONS.attack
+            ? `${actorName(target)} evaded the attack.`
+            : `${actorName(target)} wasn't listening.`
+        } `
       );
     },
     actorDefended: (actor: ActorWithAction, recoveryAmount: number) => {
