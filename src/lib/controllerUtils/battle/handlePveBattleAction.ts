@@ -77,8 +77,6 @@ const handlePveBattleAction = async (
       actor.action === ACTION_OPTIONS.attack ||
       actor.action === ACTION_OPTIONS.insult
     ) {
-      // Handle attack
-      // Handle insult
       const target = actor.id === petComparisonId ? petTarget : pet;
       const didHit = calcBattle.hit(actor.accuracy, target.speed);
       const didAttack = actor.action === ACTION_OPTIONS.attack;
@@ -90,11 +88,14 @@ const handlePveBattleAction = async (
       } else {
         log.actorInsulted(actor, target, didHit, didCrit, damage);
       }
+
+      // Handle db results
       continue;
     }
 
     if (actor.action === ACTION_OPTIONS.defend) {
-      // Handle defend
+      const recoveryAmount = calcBattle.defenseRecovery(actor.power, actor.wit);
+      log.actorDefended(actor, recoveryAmount);
       continue;
     }
 
