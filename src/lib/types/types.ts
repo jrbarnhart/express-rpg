@@ -90,7 +90,6 @@ export type VirtualStats = {
   powerBonus: number;
   wit: number;
   witBonus: number;
-  id: number;
 };
 
 export type iPveAttackResponse = unknown;
