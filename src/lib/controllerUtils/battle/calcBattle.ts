@@ -10,7 +10,7 @@ const hit = (attackerAccuracy: number, targetSpeed: number, k = 0.1) => {
 };
 
 const damage = (attackerPower: number) => {
-  const critChance = 0.5;
+  const critChance = 0.05;
   const powerMod = 0.2;
   const didCrit = Math.random() < critChance;
   const critMod = didCrit ? 1.5 : 1;
