@@ -85,15 +85,13 @@ const battleLog = () => {
         `${actorName(actor)} tried to get away but its escape was blocked.`
       );
     },
-    battleLoss: (userPet: ActorWithAction) => {
-      data.push(
-        `You gather the remains of ${actorName(userPet)} and run away.`
-      );
+    battleLoss: (pet: ActorWithAction) => {
+      data.push(`You gather the remains of ${actorName(pet)} and run away.`);
     },
-    battleVictory: (userPet: ActorWithAction) => {
+    battleVictory: (pet: ActorWithAction) => {
       data.push(
         `You and ${actorName(
-          userPet
+          pet
         )} trod over the bodies of your fallen enemies as you continue on your way.`
       );
     },
