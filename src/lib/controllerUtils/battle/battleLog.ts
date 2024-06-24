@@ -23,6 +23,23 @@ const battleLog = () => {
     actorTurn: (actor: ActorWithAction) => {
       log.push(`${actorName(actor)} prepares to act.`);
     },
+    actorAttacked: (
+      actor: ActorWithAction,
+      target: ActorWithAction,
+      didHit: boolean,
+      didCrit: boolean,
+      damage: number
+    ) => {
+      log.push(
+        `${actorName(actor)} attacked ${actorName(target)}. ${
+          didHit
+            ? `It ${
+                didCrit ? "CRITICALLY " : ""
+              }hit and did ${damage} health damage.`
+            : "It missed..."
+        }`
+      );
+    },
   };
 };
 
