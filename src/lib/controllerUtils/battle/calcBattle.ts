@@ -23,6 +23,7 @@ const defenseRecovery = (power: number, wit: number) => {
 
 const escape = (actor: ActorWithAction) => {
   return (
+    1 -
     (actor.currentHealth / actor.health + actor.currentMood / actor.mood) / 2
   );
 };
