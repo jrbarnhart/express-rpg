@@ -14,7 +14,7 @@ const damage = (attackerPower: number) => {
   const powerMod = 0.2;
   const didCrit = Math.random() < critChance;
   const critMod = didCrit ? 1.5 : 1;
-  return { damage: attackerPower * powerMod * critMod, didCrit };
+  return { damage: Math.round(attackerPower * powerMod * critMod), didCrit };
 };
 
 const actorOrder = (actorsWithStats: ActorWithStats[]) => {
