@@ -65,6 +65,9 @@ const battleLog = () => {
         )} defended itself, increasing its health and mood by ${recoveryAmount}.`
       );
     },
+    actorRan: (actor: ActorWithAction) => {
+      data.push(`${actorName(actor)} ran away in a panic.`);
+    },
   };
 };
 
