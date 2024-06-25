@@ -12,6 +12,7 @@ import { calcAllVirtualStats } from "./calcVirtualStats";
 import calcBattle from "./calcBattle";
 import battleLog from "./battleLog";
 import getActionQuery from "./getActionQuery";
+import pveBattleQuery from "../../prisma/queries/pveBattlesQuery";
 
 const handlePveBattleAction = async (
   res: Response,
@@ -87,10 +88,10 @@ const handlePveBattleAction = async (
         didAttack ? actor.power : actor.wit
       );
       const newTargetHealth = didAttack
-        ? Math.min(target.currentHealth - damage, 0)
+        ? Math.max(target.currentHealth - damage, 0)
         : target.currentHealth;
       const newTargetMood = !didAttack
-        ? Math.min(target.currentMood - damage, 0)
+        ? Math.max(target.currentMood - damage, 0)
         : target.currentMood;
 
       if (didAttack) {
@@ -116,12 +117,48 @@ const handlePveBattleAction = async (
       if (newTargetHealth === 0) {
         log.actorDied(target);
       }
-
       if (newTargetMood === 0) {
-        log.actorMindloss(actor);
+        log.actorMindloss(target);
       }
+      if (newTargetHealth === 0 || newTargetMood === 0) {
+        const opponentsDefeated = actorsWithAction.every((actor) => {
+          return (
+            actor.id === petComparisonId ||
+            actor.id === target.id ||
+            actor.currentHealth === 0 ||
+            actor.currentMood === 0
+          );
+        });
 
-      console.log(actionQueries.toString());
+        if (target.id === petComparisonId && !opponentsDefeated) {
+          log.battleLoss(pet);
+          actionQueries.push(
+            pveBattleQuery.update(battle.id, {
+              isActive: false,
+              isVictory: false,
+            })
+          );
+          break;
+        } else if (target.id === petComparisonId && opponentsDefeated) {
+          log.battleDraw;
+          actionQueries.push(
+            pveBattleQuery.update(battle.id, {
+              isActive: false,
+              isVictory: false,
+            })
+          );
+          break;
+        } else if (opponentsDefeated) {
+          log.battleVictory(pet);
+          actionQueries.push(
+            pveBattleQuery.update(battle.id, {
+              isActive: false,
+              isVictory: true,
+            })
+          );
+          break;
+        }
+      }
       continue;
     }
 
