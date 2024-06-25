@@ -1,5 +1,5 @@
 import { NpcTemplate } from "@prisma/client";
-import npcTemplateQuery from "../prisma/queries/npcTemplateQuery";
+import npcTemplateQuery from "../../prisma/queries/npcTemplateQuery";
 
 const selectBattleTemplates = async (targetBattlePower: number) => {
   if (targetBattlePower <= 0) {

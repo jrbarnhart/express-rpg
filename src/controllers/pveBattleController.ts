@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import sendResponse from "../lib/controllerUtils/sendResponse";
 import pveBattleQuery from "../lib/prisma/queries/pveBattlesQuery";
 import sendErrorResponse from "../lib/controllerUtils/sendErrorResponse";
-import selectBattleTemplates from "../lib/controllerUtils/selectBattleTemplates";
+import selectBattleTemplates from "../lib/controllerUtils/battle/selectBattleTemplates";
 import userQuery from "../lib/prisma/queries/userQuery";
 import { iNewBattleData } from "../lib/types/types";
 import handlePrismaError from "../lib/prisma/handlePrismaError";
