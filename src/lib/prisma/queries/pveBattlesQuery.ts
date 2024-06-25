@@ -34,6 +34,8 @@ const create = (data: iNewBattleData) => {
         name: template.name,
         health: template.health,
         mood: template.mood,
+        currentHealth: template.health,
+        currentMood: template.mood,
         templateId: template.id,
       };
     });
