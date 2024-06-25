@@ -107,7 +107,7 @@ const handlePveBattleAction = async (
         log.actorAttackHit(actor, target, didCrit, damage);
         actionQueries.push(
           getActionQuery.forAttack(
-            actor,
+            target,
             newTargetHealth,
             petComparisonId,
             petDbId
@@ -117,7 +117,7 @@ const handlePveBattleAction = async (
         log.actorInsultHit(actor, target, didCrit, damage);
         actionQueries.push(
           getActionQuery.forInsult(
-            actor,
+            target,
             newTargetMood,
             petComparisonId,
             petDbId
