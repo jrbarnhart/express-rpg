@@ -6,12 +6,13 @@ import { ActorWithAction, PveBattleWithOpponents } from "../../types/types";
 const forAttack = (
   target: ActorWithAction,
   newHealth: number,
-  petComparisonId: number
+  petComparisonId: number,
+  petDbId: number
 ) => {
   const isUserPet = target.id === petComparisonId;
 
   if (isUserPet) {
-    return petQuery.update(target.id, { currentHealth: newHealth });
+    return petQuery.update(petDbId, { currentHealth: newHealth });
   }
 
   return npcInstanceQuery.update(target.id, { currentHealth: newHealth });
@@ -20,12 +21,13 @@ const forAttack = (
 const forInsult = (
   target: ActorWithAction,
   newMood: number,
-  petComparisonId: number
+  petComparisonId: number,
+  petDbId: number
 ) => {
   const isUserPet = target.id === petComparisonId;
 
   if (isUserPet) {
-    return petQuery.update(target.id, { currentMood: newMood });
+    return petQuery.update(petDbId, { currentMood: newMood });
   }
 
   return npcInstanceQuery.update(target.id, { currentMood: newMood });
@@ -34,7 +36,8 @@ const forInsult = (
 const forDefend = (
   actor: ActorWithAction,
   recoveryAmount: number,
-  petComparisonId: number
+  petComparisonId: number,
+  petDbId: number
 ) => {
   const isUserPet = actor.id === petComparisonId;
 
@@ -46,7 +49,7 @@ const forDefend = (
   const newMood = Math.min(actor.currentMood + recoveryAmount, actor.mood);
 
   if (isUserPet) {
-    return petQuery.update(actor.id, {
+    return petQuery.update(petDbId, {
       currentHealth: newHealth,
       currentMood: newMood,
     });
