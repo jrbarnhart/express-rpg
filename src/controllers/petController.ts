@@ -7,6 +7,7 @@ import handlePrismaError from "../lib/prisma/handlePrismaError";
 import petQuery from "../lib/prisma/queries/petQuery";
 import { NewPetData } from "../lib/types/types";
 import speciesQuery from "../lib/prisma/queries/speciesQuery";
+import getUserId from "../lib/controllerUtils/getUserId";
 
 const pets_list = asyncHandler(async (req, res) => {
   const somePets = await petQuery.list();
@@ -74,7 +75,27 @@ const pet_update = asyncHandler(async (req, res) => {
 });
 
 const pet_feed = asyncHandler(async (req, res) => {
-  sendResponse(res, "NYI");
+  const petId = parseInt(req.params.id);
+
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
+  const pet = await petQuery.findById(petId);
+  if (!pet) {
+    sendErrorResponse(res, "Pet was not found.");
+    return;
+  }
+  if (pet.ownerId !== userId) {
+    sendErrorResponse(res, "You cannot feed pets that do not belong to you.");
+    return;
+  }
+
+  try {
+    const fedPet = petQuery.update(petId, { currentHealth: pet.health });
+    sendResponse(res, "Pet fed successfully.", fedPet);
+  } catch (error) {
+    handlePrismaError(error, res, "Error while feeding pet.");
+  }
 });
 
 const pet_interact = asyncHandler(async (req, res) => {
