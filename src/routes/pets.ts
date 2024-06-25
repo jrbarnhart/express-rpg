@@ -4,9 +4,9 @@ import isAuthenticated from "../middleware/auth/isAuthenticated";
 import canCreatePet from "../middleware/pet/canCreatePet";
 const petsRouter = express.Router();
 
-petsRouter.put("/:id/feed", isAuthenticated(), petController.pet_feed);
+petsRouter.post("/:id/feed", isAuthenticated(), petController.pet_feed);
 
-petsRouter.put("/:id/interact", isAuthenticated(), petController.pet_interact);
+petsRouter.post("/:id/interact", isAuthenticated(), petController.pet_interact);
 
 petsRouter.post(
   "/:id/activate",
