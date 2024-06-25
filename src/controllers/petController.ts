@@ -91,7 +91,7 @@ const pet_feed = asyncHandler(async (req, res) => {
   }
 
   try {
-    const fedPet = petQuery.update(petId, { currentHealth: pet.health });
+    const fedPet = await petQuery.update(petId, { currentHealth: pet.health });
     sendResponse(res, "Pet fed successfully.", fedPet);
   } catch (error) {
     handlePrismaError(error, res, "Error while feeding pet.");
@@ -99,7 +99,30 @@ const pet_feed = asyncHandler(async (req, res) => {
 });
 
 const pet_interact = asyncHandler(async (req, res) => {
-  sendResponse(res, "NYI");
+  const petId = parseInt(req.params.id);
+
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
+  const pet = await petQuery.findById(petId);
+  if (!pet) {
+    sendErrorResponse(res, "Pet was not found.");
+    return;
+  }
+  if (pet.ownerId !== userId) {
+    sendErrorResponse(
+      res,
+      "You cannot interact with pets that do not belong to you."
+    );
+    return;
+  }
+
+  try {
+    const fedPet = await petQuery.update(petId, { currentMood: pet.mood });
+    sendResponse(res, "Pet interacted with successfully.", fedPet);
+  } catch (error) {
+    handlePrismaError(error, res, "Error while interacting with pet.");
+  }
 });
 
 const pet_set_active = asyncHandler(async (req, res) => {
