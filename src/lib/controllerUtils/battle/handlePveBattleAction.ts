@@ -13,6 +13,8 @@ import calcBattle from "./calcBattle";
 import battleLog from "./battleLog";
 import getActionQuery from "./getActionQuery";
 import pveBattleQuery from "../../prisma/queries/pveBattlesQuery";
+import prisma from "../../prisma/prisma";
+import handlePrismaError from "../../prisma/handlePrismaError";
 
 const handlePveBattleAction = async (
   res: Response,
@@ -29,6 +31,7 @@ const handlePveBattleAction = async (
   const petWithStats = { ...userPet, ...petStats };
   // Set id to distinguish pet stats from npc instance stats and never overlap
   const petComparisonId = -999;
+  const petDbId = userPet.id;
   petWithStats.id = petComparisonId;
 
   const opponentsWithStats = battle.opponents.map((opponent) => {
@@ -103,12 +106,22 @@ const handlePveBattleAction = async (
       if (didAttack && didHit) {
         log.actorAttackHit(actor, target, didCrit, damage);
         actionQueries.push(
-          getActionQuery.forAttack(actor, newTargetHealth, petComparisonId)
+          getActionQuery.forAttack(
+            actor,
+            newTargetHealth,
+            petComparisonId,
+            petDbId
+          )
         );
       } else if (!didAttack && didHit) {
         log.actorInsultHit(actor, target, didCrit, damage);
         actionQueries.push(
-          getActionQuery.forInsult(actor, newTargetMood, petComparisonId)
+          getActionQuery.forInsult(
+            actor,
+            newTargetMood,
+            petComparisonId,
+            petDbId
+          )
         );
       } else {
         log.actorMissed(actor, target);
@@ -166,7 +179,12 @@ const handlePveBattleAction = async (
       const recoveryAmount = calcBattle.defenseRecovery(actor.power, actor.wit);
       log.actorDefended(actor, recoveryAmount);
       actionQueries.push(
-        getActionQuery.forDefend(actor, recoveryAmount, petComparisonId)
+        getActionQuery.forDefend(
+          actor,
+          recoveryAmount,
+          petComparisonId,
+          petDbId
+        )
       );
       continue;
     }
@@ -188,12 +206,12 @@ const handlePveBattleAction = async (
 
   const logData = log.data;
 
-  // Can only attack target with health and mood > 0
-  // Add attacks and results to log as they happen
-  sendResponse(res, "Action successful!", {
-    actorsBySpeed,
-    logData,
-  });
+  try {
+    const actionResults = await prisma.$transaction(actionQueries);
+    sendResponse(res, "Action successful.", { logData, actionResults });
+  } catch (error) {
+    handlePrismaError(error, res, "Error while applying action results.");
+  }
 };
 
 export default handlePveBattleAction;
